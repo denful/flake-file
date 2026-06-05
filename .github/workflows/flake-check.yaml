@@ -58,6 +58,7 @@ jobs:
         exclude:
           - template: minimal
           - template: flakeless-parts
+          - template: tack
     steps:
       - uses: wimpysworld/nothing-but-nix@v10
       - uses: cachix/install-nix-action@v31
@@ -144,6 +145,34 @@ jobs:
           cd templates/nixlock
           sed -i 's/# flake-file = import/flake-file = import/' default.nix
           nix-shell . -A flake-file.sh --run write-nixlock
+  tack:
+    needs: [nix-fmt]
+    name: Check tack
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'tack') }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wimpysworld/nothing-but-nix@v10
+      - uses: cachix/install-nix-action@v31
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      # The tack template is lock-less (its flake.nix declares no inputs), so
+      # the generic template job cannot --override-input it. Instead the
+      # template's recomposable tackOverrides arg injects this checkout's
+      # flake-file, exercising the override path at the same time.
+      - run: |
+          set -e -o pipefail
+          cd templates/tack
+          local_flake_file='tackOverrides.flake-file = import ./../../modules;'
+          nix build -L --impure --expr "
+            ((import ./.) { $local_flake_file }).packages.\${builtins.currentSystem}.write-tack
+          "
+          ./result/bin/write-tack
+          git diff --exit-code .tack/pins.toml
+          nix build -L --impure --expr "
+            ((import ./.) { $local_flake_file }).devShells.\${builtins.currentSystem}.default
+          "
   dev:
     needs: [bootstrap-minimal, bootstrap-tests, nix-fmt]
     name: Check flake dev

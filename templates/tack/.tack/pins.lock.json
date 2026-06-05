@@ -1,0 +1,42 @@
+{
+  "flake-file": {
+    "lastModified": 1779051720,
+    "narHash": "sha256-+jbXnODsR19pFKB0x/6kHhFgW6yV6N+CGClFr45eDU8=",
+    "owner": "vic",
+    "repo": "flake-file",
+    "rev": "c58eb27d9434e5be0c8693f1eb18d47035bc21ba",
+    "type": "github"
+  },
+  "flake-parts": {
+    "lastModified": 1778716662,
+    "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
+    "owner": "hercules-ci",
+    "repo": "flake-parts",
+    "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
+    "type": "github"
+  },
+  "import-tree": {
+    "lastModified": 1778781969,
+    "narHash": "sha256-Jjuz5CmSkur8KvLDoGa+vylEp+RkQtv4mt/qcMznpH0=",
+    "owner": "vic",
+    "repo": "import-tree",
+    "rev": "d321337efd0f23a9eb14a42adb7b2c29313ab274",
+    "type": "github"
+  },
+  "nixpkgs": {
+    "lastModified": 1780243769,
+    "narHash": "sha256-x5UQuRsH3MqI0U9afaXSNqzTPSeZlRLvFAav2Ux1pNw=",
+    "owner": "NixOS",
+    "repo": "nixpkgs",
+    "rev": "331800de5053fcebacf6813adb5db9c9dca22a0c",
+    "type": "github"
+  },
+  "tack": {
+    "lastModified": 1780213242,
+    "narHash": "sha256-5dYWCjKBwjHOCJBlQK9iBKJxoUosTGQvI62vPBdQUgs=",
+    "owner": "manic-systems",
+    "repo": "tack",
+    "rev": "8c574901340af860979500f24495417ce7e53cdc",
+    "type": "github"
+  }
+}

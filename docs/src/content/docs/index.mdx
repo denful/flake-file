@@ -63,7 +63,7 @@ nix-shell https://github.com/vic/flake-file/archive/main.tar.gz -A flake-file.sh
     Built-in support for automatic `flake.lock` flattening via `allfollow` or `nix-auto-follow`.
   </Card>
   <Card title="Multiple Backends" icon="setting">
-    Generate `flake.nix`, `unflake.nix`, `nixlock`, or `npins/` from the same module options. Switch backends without rewriting your modules.
+    Generate `flake.nix`, `unflake.nix`, `nixlock`, `npins/`, or tack pins from the same module options. Switch backends without rewriting your modules.
    
     Run `nix run .#write-flake` to regenerate `flake.nix` from your options. A flake check enforces that files stay in sync.
     Also provides `nix-shell` commands for stable Nix world.  

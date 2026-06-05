@@ -11,6 +11,7 @@ let
       flakeless-parts
       unflake
       nixlock
+      tack
       flake-options
       ;
   };
@@ -49,6 +50,11 @@ let
   nixlock.imports = [
     base
     ./nixlock
+  ];
+
+  tack.imports = [
+    base
+    ./tack
   ];
 
   default.imports = [
@@ -102,6 +108,11 @@ let
   templates.nixlock = {
     description = "nixlock template";
     path = ./../templates/nixlock;
+  };
+
+  templates.tack = {
+    description = "tack template";
+    path = ./../templates/tack;
   };
 
   templates.dendritic = {

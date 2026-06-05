@@ -33,6 +33,7 @@ let
       ./../npins
       ./../unflake
       ./../nixlock
+      ./../tack
       ./../write-inputs.nix
       ./../write-flake.nix
       ./../write-lock.nix
