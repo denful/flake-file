@@ -5,7 +5,7 @@ description: All options for the flake-file bootstrap command.
 
 import { Aside } from '@astrojs/starlight/components';
 
-The bootstrap command lets you generate `flake.nix`, `unflake.nix`, `nixlock.lock.nix`,  or `npins/` from scratch — without being inside an existing flake.
+The bootstrap command lets you generate `flake.nix`, `unflake.nix`, `.tack/`, or `npins/` from scratch — without being inside an existing flake.
 
 ```shell
 nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
@@ -22,8 +22,8 @@ The `flake-file.sh` shell provides these commands:
 | `write-flake` | Generate a `flake.nix` file |
 | `write-inputs` | Generate an `inputs.nix` expression (for debugging) |
 | `write-unflake` | Generate `unflake.nix` via [unflake](https://codeberg.org/goldstein/unflake) |
-| `write-nixlock` | Generate `nixlock.lock.nix` via [nixlock](https://codeberg.org/FrdrCkII/nixlock) |
 | `write-npins` | Generate/update `npins/` directory via [npins](https://github.com/andir/npins) |
+| `write-tack` | Generate/update `.tack/` pins and lock via [tack](https://github.com/manic-systems/tack) |
 
 ## Arguments
 

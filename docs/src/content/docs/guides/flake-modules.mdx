@@ -86,12 +86,6 @@ Defines `flake-file` options for [unflake](https://codeberg.org/goldstein/unflak
 
 Source: [`modules/unflake`](https://github.com/vic/flake-file/tree/main/modules/unflake)
 
-## `flakeModules.nixlock`
-
-Defines `flake-file` options for [nixlock](https://codeberg.org/FrdrCkII/nixlock)-based environments. Exposes `write-nixlock`.
-
-Source: [`modules/nixlock`](https://github.com/vic/flake-file/tree/main/modules/nixlock)
-
 ## `flakeModules.tack`
 
 Defines `flake-file` options for [tack](https://github.com/manic-systems/tack)-based environments: flake-like TOML pins, lazily fetched, with no `flake.lock`. Exposes `write-tack`, which renders `flake-file.inputs` into `.tack/pins.toml` and runs `tack update` to produce `.tack/pins.lock.json`. Extends `flake-file.inputs.<name>` with `tackType` (`flake`/`fetch`/`fixed`) and `unpack` (`tarball`/`file`) pin fields. Configure via `flake-file.tack.*` (package, shorturls, all-follow rules, recomposability, resolver overrides).

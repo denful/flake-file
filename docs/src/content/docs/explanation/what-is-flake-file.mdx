@@ -36,7 +36,7 @@ move your outputs function into `outputs.nix` and use something like:
 Even if some people use unstable flakes, others should not be forced out of stable Nix.
 
 Each module defines inputs and flake-file can extract to whatever input-locking backend you need.
-Be it `flake.nix`, `unflake.nix`, `nixlock`, `npins`.
+Be it `flake.nix`, `unflake.nix`, `npins`, tack pins.
 
 ## Everybody `.follows`
 
@@ -66,7 +66,7 @@ Running `nix run .#write-flake` materialises all declared inputs into `flake.nix
 
 - **Modular:** Each module declares only its own dependencies.
 - **Composable:** Modules can be shared across projects — including their input declarations.
-- **Backend-agnostic:** The same module options generate `flake.nix`, `unflake.nix`, `nixlock` or `npins/` depending on the chosen backend.
+- **Backend-agnostic:** The same module options generate `flake.nix`, `unflake.nix`, `npins/` or tack pins depending on the chosen backend.
 - **Standard Nix:** Uses the Nix module system — `lib.mkDefault`, priority overrides, conditional inputs — all work as expected.
 
 ## Real-world Usage

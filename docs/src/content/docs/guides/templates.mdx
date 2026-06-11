@@ -60,14 +60,6 @@ For **non-flake** (stable Nix) environments. Uses [goldstein/unflake](https://co
 nix flake init -t github:vic/flake-file#unflake
 ```
 
-## `nixlock`
-
-For **non-flake** (stable Nix) environments. Uses [FrdrCkII/nixlock](https://codeberg.org/FrdrCkII/nixlock) to pin inputs.
-
-```shell
-nix flake init -t github:vic/flake-file#unflake
-```
-
 ## `tack`
 
 Uses [tack](https://github.com/manic-systems/tack) to pin inputs: flake-like TOML pins (`.tack/pins.toml`), lazily fetched and transformed, with no `flake.lock`. Supports recomposable overrides so a downstream tack project can override this project's inputs.

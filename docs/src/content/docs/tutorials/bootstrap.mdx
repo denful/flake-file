@@ -21,14 +21,14 @@ You can create a `flake.nix` from scratch — without running inside an existing
 # Write a minimal flake-file.nix file (or copy a flake.nix of yours)
 echo '{ inputs.flake-file.url = "github:vic/flake-file"; }' > flake-file.nix
 
-# Generate flake.nix or unflake.nix or npins or nixlock from flake-file.nix
+# Generate flake.nix or unflake.nix or npins from flake-file.nix
 nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
   -A flake-file.sh --run write-flake --arg modules ./flake-file.nix
 ```
 
 > <small>See also: all [bootstrap command args](/reference/bootstrap)</small>
 
-Replace `write-flake` with `write-inputs`, `write-unflake`, `write-nixlock`, or `write-npins` to target a different backend.
+Replace `write-flake` with `write-inputs`, `write-unflake`, `write-tack`, or `write-npins` to target a different backend.
 
 
 ## Using a modules directory
