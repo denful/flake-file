@@ -42,6 +42,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NIX_PATH: "nixpkgs=https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz"
+      # write-tack resolves refs via api.github.com; anonymous rate limits flake on shared runners
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: wimpysworld/nothing-but-nix@v10
       - uses: cachix/install-nix-action@v31

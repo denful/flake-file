@@ -5,6 +5,11 @@ let
 
   serialize = import ./serialize.nix lib;
 
+  tackSrc = fetchTarball {
+    url = "https://github.com/manic-systems/tack/archive/8c574901340af860979500f24495417ce7e53cdc.tar.gz";
+    sha256 = "sha256-5dYWCjKBwjHOCJBlQK9iBKJxoUosTGQvI62vPBdQUgs=";
+  };
+
   cfg = flake-file.tack;
 
   tackFields = builtins.mapAttrs (
@@ -86,10 +91,9 @@ in
   options.flake-file.tack = {
     package = lib.mkOption {
       type = lib.types.functionTo lib.types.package;
-      default =
-        pkgs: pkgs.tack or (throw "flake-file.tack.package: no `pkgs.tack`; set flake-file.tack.package");
-      defaultText = lib.literalExpression "pkgs: pkgs.tack";
-      description = "Function from pkgs to the tack package providing the `tack` binary.";
+      default = pkgs: pkgs.tack or (pkgs.callPackage "${tackSrc}/nix/package.nix" { });
+      defaultText = lib.literalExpression "pkgs: pkgs.tack or (pkgs.callPackage \"\${tackSrc}/nix/package.nix\" { })";
+      description = "Function from pkgs to the tack package providing the `tack` binary. Defaults to `pkgs.tack` when present, otherwise builds tack from a pinned source tarball.";
     };
 
     lockDir = lib.mkOption {

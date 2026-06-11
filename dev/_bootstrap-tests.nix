@@ -193,9 +193,38 @@ let
     ];
     text = ''
       mkdir -p ${outdir}/npins
-      echo '{"pins":{},"version":7}' > ${outdir}/npins/sources.json
+      echo '{"pins":{},"version":8}' > ${outdir}/npins/sources.json
       write-lock
       jq -e '.pins | has("empty")' ${outdir}/npins/sources.json
+    '';
+  };
+
+  test-tack = pkgs.writeShellApplication {
+    name = "test-tack";
+    runtimeInputs = [
+      (empty.flake-file.apps.write-tack pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-tack
+      cat ${outdir}/.tack/pins.toml
+      grep github:vic/empty-flake ${outdir}/.tack/pins.toml
+      jq -e 'has("empty")' ${outdir}/.tack/pins.lock.json
+      [ -e ${outdir}/.tack/default.nix ]
+    '';
+  };
+
+  test-write-lock-tack = pkgs.writeShellApplication {
+    name = "test-write-lock-tack";
+    runtimeInputs = [
+      (empty.flake-file.apps.write-lock pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      mkdir -p ${outdir}/.tack
+      echo '{ }' > ${outdir}/.tack/pins.lock.json
+      write-lock
+      jq -e 'has("empty")' ${outdir}/.tack/pins.lock.json
     '';
   };
 
@@ -222,8 +251,10 @@ pkgs.mkShell {
     test-npins-skip
     test-npins-follows
     test-npins-transitive
+    test-tack
     test-write-lock-flake
     test-write-lock-npins
+    test-write-lock-tack
     test-write-lock-unflake
   ];
 }
