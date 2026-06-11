@@ -13,10 +13,6 @@ let
       app = "write-npins";
     }
     {
-      file = flake-file.nixlock.lockFileName;
-      app = "write-nixlock";
-    }
-    {
       file = "${flake-file.tack.lockDir}/${flake-file.tack.lockFile}";
       app = "write-tack";
     }

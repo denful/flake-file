@@ -23,7 +23,7 @@ This means
 - Your inputs follow a **typed Input Schema**.
 - Your outputs can be defined on a **typed Output Schema** [example](templates/minimal/flake-file.nix).
 
-> Despite the original flake-oriented name, it NOW also works on _stable Nix_, non-flakes environments via [npins](templates/npins), [unflake](templates/unflake), [nixlock](https://codeberg.org/FrdrCkII/nixlock)
+> Despite the original flake-oriented name, it NOW also works on _stable Nix_, non-flakes environments via [npins](templates/npins), [unflake](templates/unflake)
 
 <table><tr><td>
 
@@ -39,7 +39,7 @@ This means
 - Incrementally add [flake-parts-builder](#parts_templates) templates.
 - Pick flakeModules for different feature sets.
 - [Dendritic](https://vic.github.io/dendrix/Dendritic.html) flake template.
-- Works on stable Nix, [npins](templates/npins), [unflake](templates/unflake), [nixlock](templates/nixlock) environments.
+- Works on stable Nix, [npins](templates/npins), [unflake](templates/unflake) environments.
 
 </td><td>
 

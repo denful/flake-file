@@ -128,23 +128,6 @@ jobs:
           cd templates/unflake
           sed -i 's/# flake-file = import/flake-file = import/' default.nix
           nix-shell . -A flake-file.sh --run 'write-unflake --verbose'
-  nixlock:
-    needs: [nix-fmt]
-    name: Check nixlock
-    runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'nixlock') }}
-    env:
-      NIX_PATH: "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: wimpysworld/nothing-but-nix@v10
-      - uses: cachix/install-nix-action@v31
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: |
-          set -e -o pipefail
-          cd templates/nixlock
-          sed -i 's/# flake-file = import/flake-file = import/' default.nix
-          nix-shell . -A flake-file.sh --run write-nixlock
   tack:
     needs: [nix-fmt]
     name: Check tack
