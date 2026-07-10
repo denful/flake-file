@@ -52,6 +52,11 @@ let
             default = null;
             type = lib.types.nullOr lib.types.bool;
           };
+          shallow = lib.mkOption {
+            description = "Whether to shallow checkout git repos";
+            default = null;
+            type = lib.types.nullOr lib.types.bool;
+          };
           lfs = lib.mkOption {
             description = "Whether to checkout with git LFS support";
             default = null;

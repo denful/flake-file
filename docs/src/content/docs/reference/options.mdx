@@ -35,6 +35,7 @@ Each input is declared under `flake-file.inputs.<name>`.
 | `flake-file.inputs.<name>.ref` | `str` | Branch or tag pin |
 | `flake-file.inputs.<name>.host` | `str` | Custom host for git forges |
 | `flake-file.inputs.<name>.submodules` | `bool` | Whether to fetch git submodules |
+| `flake-file.inputs.<name>.shallow` | `bool` | Whether to fetch shallowly |
 | `flake-file.inputs.<name>.lfs` | `bool` | Whether to fetch with git LFS support |
 | `flake-file.inputs.<name>.flake` | `bool` | Is the input a flake? (default: `true`) |
 | `flake-file.inputs.<name>.follows` | `str` | Follow another input's resolved value |

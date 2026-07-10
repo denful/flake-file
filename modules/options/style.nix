@@ -50,6 +50,7 @@ in
         "narHash"
         "rev"
         "ref"
+        "shallow"
         "submodules"
         "lfs"
         "flake"

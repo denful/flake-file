@@ -63,6 +63,7 @@ let
       rev = { };
       ref = { };
       host = { };
+      shallow = { };
       flake = {
         testEmpty = v: v;
         nonEmptyMerge = {
