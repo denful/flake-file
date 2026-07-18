@@ -55,5 +55,5 @@ This means
 
 ```shell
 mv flake.nix flake-file.nix
-nix-shell https://github.com/vic/flake-file/archive/main.zip -A flake-file.sh --run bootstrap
+nix-shell https://github.com/vic/flake-file/archive/main.zip -A bootstrap --run bootstrap
 ```
