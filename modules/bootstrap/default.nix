@@ -80,7 +80,9 @@ let
 
   evaled = lib.evalModules { modules = [ module ]; };
 
-  appPackages = lib.mapAttrs (_: app: app pkgs) evaled.config.flake-file.apps;
+  appPackages = lib.mapAttrs (
+    _: app: pkgs.mkShell { buildInputs = [ (app pkgs) ]; }
+  ) evaled.config.flake-file.apps;
 
 in
 evaled.config // appPackages
