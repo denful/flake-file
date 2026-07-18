@@ -137,8 +137,12 @@ let
       write-inputs
       grep github:vic/flake-file ${outdir}/inputs.nix
       grep nixpkgs-unstable ${outdir}/inputs.nix
-      ! grep github:vic/import-tree ${outdir}/inputs.nix
-      ! grep github:hercules-ci/flake-parts ${outdir}/inputs.nix
+      if grep github:vic/import-tree ${outdir}/inputs.nix; then
+        exit 1
+      fi
+      if grep github:hercules-ci/flake-parts ${outdir}/inputs.nix; then
+        exit 1
+      fi
     '';
   };
 
