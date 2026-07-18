@@ -98,7 +98,7 @@ let
     name = "test-flake-public";
     runtimeInputs = [
       pkgs.nix
-      (empty.write-flake pkgs)
+      empty.write-flake
     ];
     text = ''
       write-flake
@@ -111,7 +111,7 @@ let
     name = "test-flake-public-ignores-broken-app";
     runtimeInputs = [
       pkgs.nix
-      (broken-app.write-flake pkgs)
+      broken-app.write-flake
     ];
     text = ''
       write-flake
