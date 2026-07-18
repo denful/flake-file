@@ -65,7 +65,7 @@ And now, lets replace `flake.nix` using bootstrapping magic step:
 
 ```shell "./modules" "flake-parts"
 nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
-  -A flake-file.sh --run write-flake \
+  -A write-flake --run write-flake \
   --arg modules ./modules --argstr outputs flake-parts
 ```
 
