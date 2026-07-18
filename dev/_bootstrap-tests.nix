@@ -190,10 +190,11 @@ let
     runtimeInputs = [
       (empty.flake-file.apps.write-lock pkgs)
       pkgs.jq
+      pkgs.npins
     ];
     text = ''
-      mkdir -p ${outdir}/npins
-      echo '{"pins":{},"version":8}' > ${outdir}/npins/sources.json
+      mkdir -p ${outdir}
+      (cd ${outdir} && npins init --bare)
       write-lock
       jq -e '.pins | has("empty")' ${outdir}/npins/sources.json
     '';
