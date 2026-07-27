@@ -110,9 +110,12 @@ let
     pkgs.writeShellApplication {
       name = "write-flake";
       meta.description = "Generate a flake.nix file";
+      runtimeInputs = [ pkgs.diffutils ];
       text = ''
         cd ${config.flake-file.intoPath}
-        cat ${formatted pkgs} > flake.nix
+        if ! cmp -s ${formatted pkgs} flake.nix; then
+          cat ${formatted pkgs} > flake.nix
+        fi
         ${hooks}
       '';
     };
