@@ -30,10 +30,15 @@ let
     pkgs:
     pkgs.writeShellApplication {
       name = "prune-lock";
+      runtimeInputs = [ pkgs.diffutils ];
       text = ''
-        nix flake metadata > /dev/null
         ${prune-cmd pkgs} flake.lock pruned.lock
-        mv pruned.lock flake.lock
+        if cmp -s flake.lock pruned.lock; then
+          rm pruned.lock
+        else
+          mv pruned.lock flake.lock
+        fi
+        nix flake metadata > /dev/null
       '';
     };
 

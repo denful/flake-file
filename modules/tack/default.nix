@@ -6,8 +6,8 @@ let
   serialize = import ./serialize.nix lib;
 
   tackSrc = fetchTarball {
-    url = "https://github.com/manic-systems/tack/archive/8c574901340af860979500f24495417ce7e53cdc.tar.gz";
-    sha256 = "sha256-5dYWCjKBwjHOCJBlQK9iBKJxoUosTGQvI62vPBdQUgs=";
+    url = "https://github.com/manic-systems/tack/archive/refs/tags/v1.0.0.tar.gz";
+    sha256 = "sha256-KhJb0NWLhj8AkD8uWEbXt179YlFLemk0OgOltw4jEk8=";
   };
 
   cfg = flake-file.tack;
