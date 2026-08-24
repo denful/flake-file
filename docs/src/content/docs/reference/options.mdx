@@ -40,6 +40,7 @@ Each input is declared under `flake-file.inputs.<name>`.
 | `flake-file.inputs.<name>.flake` | `bool` | Is the input a flake? (default: `true`) |
 | `flake-file.inputs.<name>.follows` | `str` | Follow another input's resolved value |
 | `flake-file.inputs.<name>.inputs.<dep>.follows` | `str` | Nested transitive follow |
+| `flake-file.inputs.<name>.inputs.<dep>.autoFollow` | `bool` | Allow `flake-edit follow` to automatically follow this nested input (default: `true`) |
 | `flake-file.inputs.<name>.inputs.<dep>.inputs...` | `…` | Recursively follow deeper transitive deps |
 
 ### Example
@@ -92,3 +93,11 @@ Each hook has:
 | `flake-file.prune-lock.program` | `pkgs -> drv` | Function building the lock-pruning executable |
 
 See [Lock Flattening guide](/guides/lock-flattening) for usage.
+
+## Automatic Follow Options
+
+| Option | Type | Description |
+|---|---|---|
+| `flake-file.auto-follow.enable` | `bool` | Maintain follows with `flake-edit follow` during writes and checks |
+
+See the [Automatic Follows guide](/guides/auto-follow) for automatic management and per-input exclusions.

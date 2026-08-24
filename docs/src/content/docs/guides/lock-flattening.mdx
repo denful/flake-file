@@ -7,6 +7,8 @@ description: Automatically flatten flake.lock to reduce dependency duplication.
 
 Nix flakes fetch every input's own lock file, which can result in many copies of the same package set (e.g. multiple `nixpkgs` versions) being downloaded and stored. Flattening forces all inputs to share common dependencies.
 
+The lock-flattening hook is an alternative to [automatic `follows` declarations with `flake-edit`](/guides/auto-follow). Flattening keeps generated follows out of `flake.nix` and records the deduplication only in `flake.lock`. See the [comparison table](/guides/auto-follow#automatic-follows-or-lock-flattening) before choosing; generally, enable one approach rather than both.
+
 ## Built-in Modules
 
 flake-file ships support for two established flattening tools:
