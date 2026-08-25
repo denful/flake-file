@@ -74,6 +74,12 @@ Enables automatic `flake.lock` flattening using [fzakaria/nix-auto-follow](https
 
 Source: [`modules/prune-lock/nix-auto-follow.nix`](https://github.com/vic/flake-file/tree/main/modules/prune-lock/nix-auto-follow.nix)
 
+## `flakeModules.auto-follow`
+
+Enables automatic `follows` declarations maintained by [`flake-edit follow`](https://github.com/a-kenji/flake-edit). This is an alternative to the lock-flattening modules above.
+
+Source: [`modules/auto-follow.nix`](https://github.com/vic/flake-file/tree/main/modules/auto-follow.nix)
+
 ## `flakeModules.npins`
 
 Defines `flake-file` options for [npins](https://github.com/andir/npins)-based environments. Exposes `write-npins`. Supports `github`, `gitlab`, `channel`, `tarball`, and `git` schemes. Respects `follows` for deduplication. Prunes stale pins automatically.

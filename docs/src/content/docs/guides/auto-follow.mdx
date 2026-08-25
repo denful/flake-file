@@ -8,10 +8,13 @@ flake-file can use [`flake-edit follow`](https://github.com/a-kenji/flake-edit) 
 This is an alternative to the [`flake.lock` flattening hook](/guides/lock-flattening). Both approaches reduce duplicate transitive inputs, but they store the result in different places. Generally, choose one rather than enabling both.
 
 ```nix
+{ inputs, ... }:
 {
-  flake-file.auto-follow.enable = true;
+  imports = [ inputs.flake-file.flakeModules.auto-follow ];
 }
 ```
+
+Alternatively, enable the underlying option directly with `flake-file.auto-follow.enable = true`.
 
 `write-flake` updates `flake.lock`, runs `flake-edit follow`, and updates the lock again. The generated-file check runs the same follow operation on a temporary copy, so `nix flake check` also detects missing or stale automatic follows.
 
