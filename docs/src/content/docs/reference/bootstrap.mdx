@@ -46,7 +46,7 @@ The Nix file or directory containing your flake-file module definitions. All `.n
 
 ### `bootstrap`
 
-Include predefined inputs from the built-in `bootstrap.nix`. When set to `true`, all bootstrap inputs are included. When set to a list, only the named inputs are included.
+Include predefined inputs from `modules/bootstrap/inputs.nix`. When set to `true`, all bootstrap inputs are included. When set to a list, only the named inputs are included. These defaults are imported before your modules, so your modules can override them.
 
 - **Type:** `true` | list of input names
 - **Default:** `[]` (none)
