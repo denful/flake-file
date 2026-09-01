@@ -13,7 +13,7 @@ You can use [`templates/minimal`](https://github.com/vic/flake-file/tree/main/te
 
 ```shell
 mv flake.nix flake-file.nix
-nix-shell https://github.com/vic/flake-file/archive/main.tar.gz -A flake-file.sh --run bootstrap
+nix-shell https://github.com/vic/flake-file/archive/main.tar.gz -A bootstrap --run bootstrap
 ```
 
 ## The new `flake.nix` (static Nix)
@@ -64,7 +64,7 @@ When your input changes, run it again to propagate your input changes into
 the **static** `flake.nix`.
 
 ```shell
-nix-shell https://github.com/vic/flake-file/archive/main.zip -A flake-file.sh --run bootstrap
+nix-shell https://github.com/vic/flake-file/archive/main.zip -A bootstrap --run bootstrap
 ```
 
 <Aside title="You are done!">

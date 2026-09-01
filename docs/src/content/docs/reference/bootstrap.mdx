@@ -9,12 +9,17 @@ The bootstrap command lets you generate `flake.nix`, `unflake.nix`, `.tack/`, or
 
 ```shell
 nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
-  -A flake-file.sh --run <app> [--arg <name> <value>]...
+  -A <app> --run <app> [--arg <name> <value>]...
 ```
 
 ## Apps
 
-The `flake-file.sh` shell provides these commands:
+Each app is available as a standalone top-level target. Use the matching
+`-A <app>` target when running one command so unrelated backends are not
+realized. Use `-A flake-file.sh` only when you want an aggregate shell with all
+commands.
+
+The bootstrap entrypoint provides these commands:
 
 | App | Description |
 | --- | --- |
@@ -46,7 +51,7 @@ The Nix file or directory containing your flake-file module definitions. All `.n
 
 ### `bootstrap`
 
-Include predefined inputs from the built-in `bootstrap.nix`. When set to `true`, all bootstrap inputs are included. When set to a list, only the named inputs are included.
+Include predefined inputs from `modules/bootstrap/inputs.nix`. When set to `true`, all bootstrap inputs are included. When set to a list, only the named inputs are included. These defaults are imported before your modules, so your modules can override them.
 
 - **Type:** `true` | list of input names
 - **Default:** `[]` (none)
