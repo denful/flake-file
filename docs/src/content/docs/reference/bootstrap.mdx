@@ -9,12 +9,17 @@ The bootstrap command lets you generate `flake.nix`, `unflake.nix`, `.tack/`, or
 
 ```shell
 nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
-  -A flake-file.sh --run <app> [--arg <name> <value>]...
+  -A <app> --run <app> [--arg <name> <value>]...
 ```
 
 ## Apps
 
-The `flake-file.sh` shell provides these commands:
+Each app is available as a standalone top-level target. Use the matching
+`-A <app>` target when running one command so unrelated backends are not
+realized. Use `-A flake-file.sh` only when you want an aggregate shell with all
+commands.
+
+The bootstrap entrypoint provides these commands:
 
 | App | Description |
 | --- | --- |

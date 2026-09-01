@@ -54,7 +54,7 @@ And now, lets generate `./npins` from `./flake-file.nix`.
 
 ```shell "./flake-file.nix" "write-npins"
 nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
-  -A flake-file.sh --run write-npins --arg modules ./flake-file.nix
+  -A write-npins --run write-npins --arg modules ./flake-file.nix
 ```
 
 > <small>See also: all [bootstrap command args](/reference/bootstrap)</small>
@@ -118,7 +118,7 @@ To update npins from inputs at ./modules do:
 
 ```shell "./modules" "write-npins"
 nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
-  -A flake-file.sh --run write-npins --arg modules ./modules
+  -A write-npins --run write-npins --arg modules ./modules
 ```
 
 ### `(A)` flake-like inputs

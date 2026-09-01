@@ -19,6 +19,16 @@ let
     outputs = _: { };
   };
 
+  broken-app = bootstrap {
+    inputs.empty.url = "github:vic/empty-flake";
+    outputs = _: { };
+    flake-file.apps.write-broken =
+      pkgs:
+      pkgs.runCommand "write-broken" { } ''
+        exit 1
+      '';
+  };
+
   all-inputs-schemes = bootstrap {
     inputs.simple.url = "github:vic/empty-flake";
     inputs.withBranch.url = "github:vic/empty-flake/main";
@@ -76,6 +86,32 @@ let
     runtimeInputs = [
       pkgs.nix
       (empty.flake-file.apps.write-flake pkgs)
+    ];
+    text = ''
+      write-flake
+      cat ${outdir}/flake.nix
+      grep github:vic/empty-flake ${outdir}/flake.nix
+    '';
+  };
+
+  test-flake-public = pkgs.writeShellApplication {
+    name = "test-flake-public";
+    runtimeInputs = [
+      pkgs.nix
+      empty.write-flake
+    ];
+    text = ''
+      write-flake
+      cat ${outdir}/flake.nix
+      grep github:vic/empty-flake ${outdir}/flake.nix
+    '';
+  };
+
+  test-flake-public-ignores-broken-app = pkgs.writeShellApplication {
+    name = "test-flake-public-ignores-broken-app";
+    runtimeInputs = [
+      pkgs.nix
+      broken-app.write-flake
     ];
     text = ''
       write-flake
@@ -246,6 +282,8 @@ pkgs.mkShell {
   buildInputs = [
     test-inputs
     test-flake
+    test-flake-public
+    test-flake-public-ignores-broken-app
     test-unflake
     test-npins
     test-npins-schemes
