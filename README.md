@@ -35,7 +35,7 @@ This means
 - `flake check` ensures files are up to date.
 - App for `flake.nix` generator: `nix run .#write-flake`
 - Custom do-not-edit header.
-- Automatic flake.lock [flattening](#automatic-flakelock-flattening).
+- Reduce duplicate inputs using automatic follows powered by [`flake-edit`](https://github.com/a-kenji/flake-edit), or via automatic `flake.lock` [flattening](#automatic-flakelock-flattening).
 - Incrementally add [flake-parts-builder](#parts_templates) templates.
 - Pick flakeModules for different feature sets.
 - [Dendritic](https://vic.github.io/dendrix/Dendritic.html) flake template.

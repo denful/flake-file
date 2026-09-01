@@ -1,0 +1,45 @@
+---
+title: Automatic Follows
+description: Use flake-edit to maintain follows declarations automatically.
+---
+
+flake-file can use [`flake-edit follow`](https://github.com/a-kenji/flake-edit) to add and remove `follows` declarations whenever `flake.nix` is generated.
+
+This is an alternative to the [`flake.lock` flattening hook](/guides/lock-flattening). Both approaches reduce duplicate transitive inputs, but they store the result in different places. Generally, choose one rather than enabling both.
+
+```nix
+{ inputs, ... }:
+{
+  imports = [ inputs.flake-file.flakeModules.auto-follow ];
+}
+```
+
+Alternatively, enable the underlying option directly with `flake-file.auto-follow.enable = true`.
+
+`write-flake` updates `flake.lock`, runs `flake-edit follow`, and updates the lock again. The generated-file check runs the same follow operation on a temporary copy, so `nix flake check` also detects missing or stale automatic follows.
+
+Automatic follows require `pkgs.flake-edit` version 0.3.5 or newer. Enabling the feature with an older or missing package produces an evaluation error identifying the required version.
+
+## Automatic follows or lock flattening?
+
+| | Automatic follows | Lock flattening hook |
+|---|---|---|
+| Source of truth | `follows` declarations in `flake.nix` | Rewritten relationships in `flake.lock` |
+| Visibility | Relationships are visible when reviewing `flake.nix` | Keeps `flake.nix` free of generated follows |
+| Configuration | Supports per-nested-input opt-outs | Configured for the whole lock file |
+| Writes | Updates both `flake.nix` and `flake.lock` | Rewrites only `flake.lock` after generation |
+| Best fit | Explicit, reviewable Nix-native follows | Existing lock-flattening workflows or minimal generated flakes |
+
+Use automatic follows when you want deduplication represented as ordinary flake declarations. Use the lock hook when you want deduplication to remain an implementation detail of the generated lock file.
+
+## Opting out an input
+
+When automatic follows are enabled, flake-edit manages nested `follows` declarations by default. Exclude a particular nested input when it should not be followed automatically:
+
+```nix
+{
+  flake-file.inputs.crane.inputs.nixpkgs.autoFollow = false;
+}
+```
+
+An exclusion cannot also configure `follows`: one requests no automatic follow while the other requests an explicit follow. flake-file reports that conflicting configuration when automatic follows are enabled.
