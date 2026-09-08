@@ -11,7 +11,9 @@
 
 # Non-static Nix on your flake inputs! Define custom output schemas.
 
-> `flake-file` and [vic](https://bsky.app/profile/oeiuwq.bsky.social)'s [dendritic libs](https://denful.dev/) made for you with Love++ and AI--. If you like my work, consider [sponsoring](https://denful.dev/sponsor)
+> If Flake-File or other [denful libs](https://github.com/denful) have been of use to you, consider [sponsoring](https://denful.dev/sponsor).
+
+> NOTE: Den no longer relates to the <code>"Dendritic"</code> name, Den was born to explore the limits of that pattern and has evolved to something much more advanced and flexible, the official dendritic repo no longer considers this Dendritic.
 
 **flake-file** lets you generate a clean, maintainable `flake.nix` from Nix module options. Use the _real_ Nix language to define your inputs.
 
