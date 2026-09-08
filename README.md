@@ -1,9 +1,9 @@
 <!-- Badges -->
 
 <p align="right">
-  <a href="https://dendritic.oeiuwq.com/sponsor"><img src="https://img.shields.io/badge/sponsor-vic-white?logo=githubsponsors&logoColor=white&labelColor=%23FF0000" alt="Sponsor Vic"/>
+  <a href="https://denful.dev/sponsor"><img src="https://img.shields.io/badge/sponsor-vic-white?logo=githubsponsors&logoColor=white&labelColor=%23FF0000" alt="Sponsor Vic"/>
   </a>
-  <a href="https://dendritic.oeiuwq.com"> <img src="https://img.shields.io/badge/Dendritic-Nix-informational?logo=nixos&logoColor=white" alt="Dendritic Nix"/> </a>
+  <a href="https://denful.dev/"> <img src="https://img.shields.io/badge/Dendritic-Nix-informational?logo=nixos&logoColor=white" alt="Dendritic Nix"/> </a>
   <a href="https://github.com/denful/flake-file/actions">
   <img src="https://github.com/denful/flake-file/workflows/flake-check/badge.svg" alt="CI Status"/> </a>
   <a href="LICENSE"> <img src="https://img.shields.io/github/license/denful/flake-file" alt="License"/> </a>
@@ -11,7 +11,7 @@
 
 # Non-static Nix on your flake inputs! Define custom output schemas.
 
-> `flake-file` and [vic](https://bsky.app/profile/oeiuwq.bsky.social)'s [dendritic libs](https://dendritic.oeiuwq.com) made for you with Love++ and AI--. If you like my work, consider [sponsoring](https://dendritic.oeiuwq.com/sponsor)
+> `flake-file` and [vic](https://bsky.app/profile/oeiuwq.bsky.social)'s [dendritic libs](https://denful.dev/) made for you with Love++ and AI--. If you like my work, consider [sponsoring](https://denful.dev/sponsor)
 
 **flake-file** lets you generate a clean, maintainable `flake.nix` from Nix module options. Use the _real_ Nix language to define your inputs.
 
@@ -49,7 +49,7 @@ This means
 
 </td></tr></table>
 
-## Learn more: [Documentation](https://flake-file.oeiuwq.com)
+## Learn more: [Documentation](https://flake-file.denful.dev)
 
 ## Try it Now!
 
