@@ -14,7 +14,7 @@ Your project must already use [flake-parts](https://flake.parts). If it doesn't,
 In your current `flake.nix`, add:
 
 ```nix
-flake-file.url = "github:vic/flake-file";
+flake-file.url = "github:denful/flake-file";
 ```
 
 ### 2. Move outputs to outputs.nix
@@ -45,7 +45,7 @@ Copy your current `flake.nix` input declarations into a flake-parts module:
   flake-file = {
     description = "Your flake description";
     inputs = {
-      flake-file.url = "github:vic/flake-file";
+      flake-file.url = "github:denful/flake-file";
       # ... all your original inputs here
     };
     nixConfig = { }; # if you had any

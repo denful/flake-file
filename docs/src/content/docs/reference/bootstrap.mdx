@@ -8,7 +8,7 @@ import { Aside } from '@astrojs/starlight/components';
 The bootstrap command lets you generate `flake.nix`, `unflake.nix`, `.tack/`, or `npins/` from scratch — without being inside an existing flake.
 
 ```shell
-nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
+nix-shell https://github.com/denful/flake-file/archive/refs/heads/main.zip \
   -A flake-file.sh --run <app> [--arg <name> <value>]...
 ```
 
@@ -31,7 +31,7 @@ All arguments are passed as `--arg <name> <value>` to `nix-shell`.
 
 ### `modules`
 
-The Nix file or directory containing your flake-file module definitions. All `.nix` files in a directory are auto-imported via [import-tree](https://github.com/vic/import-tree).
+The Nix file or directory containing your flake-file module definitions. All `.nix` files in a directory are auto-imported via [import-tree](https://github.com/denful/import-tree).
 
 - **Type:** path
 - **Default:** `[]` (empty)
@@ -55,8 +55,8 @@ Available bootstrap inputs:
 
 | Name | Default URL |
 | --- | --- |
-| `import-tree` | `github:vic/import-tree` |
-| `flake-file` | `github:vic/flake-file` |
+| `import-tree` | `github:denful/import-tree` |
+| `flake-file` | `github:denful/flake-file` |
 | `flake-parts` | `github:hercules-ci/flake-parts` |
 | `nixpkgs` | `https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz` |
 
@@ -98,7 +98,7 @@ Override the `flake-file.outputs` expression. When not provided, the default fro
 --argstr outputs 'inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules)'
 ```
 
-Instead of the above, some special values are recognized: see [outputs.nix](https://github.com/vic/flake-file/blob/main/modules/options/outputs.nix)
+Instead of the above, some special values are recognized: see [outputs.nix](https://github.com/denful/flake-file/blob/main/modules/options/outputs.nix)
 
 ```shell
 --argstr outputs flake-parts

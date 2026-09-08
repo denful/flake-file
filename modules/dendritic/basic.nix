@@ -7,6 +7,6 @@
   ];
 
   flake-file.inputs = {
-    flake-file.url = lib.mkDefault "github:vic/flake-file";
+    flake-file.url = lib.mkDefault "github:denful/flake-file";
   };
 }

@@ -5,13 +5,13 @@
 recomposable = true
 
 [inputs.flake-file]
-url = "github:vic/flake-file"
+url = "github:denful/flake-file"
 
 [inputs.flake-parts]
 url = "github:hercules-ci/flake-parts"
 
 [inputs.import-tree]
-url = "github:vic/import-tree"
+url = "github:denful/import-tree"
 
 [inputs.nixpkgs]
 url = "github:NixOS/nixpkgs/nixos-unstable"
