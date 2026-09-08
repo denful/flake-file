@@ -21,7 +21,7 @@ A minimal, explicit setup without extra framework dependencies.
   flake-file.inputs = {
     flake-file.url = "github:denful/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   };
 
   systems = inputs.nixpkgs.lib.systems.flakeExposed;

@@ -10,7 +10,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
     import-tree.url = "github:denful/import-tree";
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
     nixpkgs-lib.follows = "nixpkgs";
   };
 }

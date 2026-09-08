@@ -7,6 +7,6 @@
     import-tree.url = "github:denful/import-tree";
     with-inputs.url = "github:denful/with-inputs";
     with-inputs.flake = false;
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   };
 }

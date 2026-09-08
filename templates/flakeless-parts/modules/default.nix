@@ -6,7 +6,7 @@
     flake-file.url = "github:denful/flake-file";
     import-tree.url = "github:denful/import-tree";
     with-inputs.url = "github:denful/with-inputs";
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 }

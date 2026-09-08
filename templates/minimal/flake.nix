@@ -18,7 +18,7 @@
 
   inputs = {
     flake-file.url = "github:denful/flake-file";
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   };
 
 }

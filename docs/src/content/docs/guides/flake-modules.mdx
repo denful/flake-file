@@ -38,7 +38,7 @@ A batteries-included setup for [Dendritic](https://vic.github.io/dendrix/Dendrit
 
   flake-file = {
     description = "My Awesome Flake";
-    inputs.nixpkgs.url = lib.mkDefault "github:NixOS/nixpkgs/nixpkgs-unstable";
+    inputs.nixpkgs.url = lib.mkDefault "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
     inputs.nixpkgs-lib.follows = "nixpkgs";
   };
 }

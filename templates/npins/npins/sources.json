@@ -28,7 +28,7 @@
     },
     "nixpkgs": {
       "type": "Tarball",
-      "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz",
+      "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst",
       "hash": "sha256-5xZ8rQTzV4cSAPMvIZpVpF05p5iwUnEuONeelwseA4g="
     },
     "with-inputs": {
