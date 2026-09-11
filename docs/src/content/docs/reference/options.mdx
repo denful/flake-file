@@ -5,7 +5,7 @@ description: Complete reference for all flake-file.* module options.
 
 All options are set under the `flake-file` namespace in any flake-parts module.
 
-See the source: [`modules/options/default.nix`](https://github.com/vic/flake-file/blob/main/modules/options/default.nix)
+See the source: [`modules/options/default.nix`](https://github.com/denful/flake-file/blob/main/modules/options/default.nix)
 
 ## Top-level Options
 
@@ -49,7 +49,7 @@ Each input is declared under `flake-file.inputs.<name>`.
 flake-file = {
   description = "my awesome flake";
   nixConfig = {};
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   inputs.nixpkgs-lib.follows = "nixpkgs";
   inputs.my-tool.flake = false;
   inputs.my-tool.url = "github:owner/my-tool";

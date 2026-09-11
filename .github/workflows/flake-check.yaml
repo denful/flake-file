@@ -20,7 +20,7 @@ jobs:
     name: Bootstrap templates/minimal
     runs-on: ubuntu-latest
     env:
-      NIX_PATH: "nixpkgs=https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz"
+      NIX_PATH: "nixpkgs=https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst"
     steps:
       - uses: wimpysworld/nothing-but-nix@v10
       - uses: cachix/install-nix-action@v31
@@ -41,7 +41,7 @@ jobs:
     name: Bootstrap apps
     runs-on: ubuntu-latest
     env:
-      NIX_PATH: "nixpkgs=https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz"
+      NIX_PATH: "nixpkgs=https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst"
       # write-tack resolves refs via api.github.com; anonymous rate limits flake on shared runners
       GITHUB_TOKEN: ${{ github.token }}
     steps:

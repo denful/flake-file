@@ -10,7 +10,7 @@
       "branch": "main",
       "submodules": false,
       "revision": "cdb4abe76b3ff0b611343514f584faa2688a12af",
-      "url": "https://github.com/vic/flake-file/archive/cdb4abe76b3ff0b611343514f584faa2688a12af.tar.gz",
+      "url": "https://github.com/denful/flake-file/archive/cdb4abe76b3ff0b611343514f584faa2688a12af.tar.gz",
       "hash": "sha256-5FB/FQ+gCvFbEuyMxydkUHuMCe0UEgMra5jI2D6SAQU="
     },
     "import-tree": {
@@ -23,12 +23,12 @@
       "branch": "main",
       "submodules": false,
       "revision": "205675fa599ff8a74b6c8c2cc5149cdaeac76f5f",
-      "url": "https://github.com/vic/import-tree/archive/205675fa599ff8a74b6c8c2cc5149cdaeac76f5f.tar.gz",
+      "url": "https://github.com/denful/import-tree/archive/205675fa599ff8a74b6c8c2cc5149cdaeac76f5f.tar.gz",
       "hash": "sha256-4TRO+jUycfR3g4KAbyK0wQEEJ7Xcmid2Ry+tWv4HPLw="
     },
     "nixpkgs": {
       "type": "Tarball",
-      "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz",
+      "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst",
       "hash": "sha256-5xZ8rQTzV4cSAPMvIZpVpF05p5iwUnEuONeelwseA4g="
     },
     "with-inputs": {
@@ -44,7 +44,7 @@
       "submodules": false,
       "version": "v0.1.0",
       "revision": "8eeec49f4d349ddee87aa6a60ba7f8b25781f747",
-      "url": "https://api.github.com/repos/vic/with-inputs/tarball/refs/tags/v0.1.0",
+      "url": "https://api.github.com/repos/denful/with-inputs/tarball/refs/tags/v0.1.0",
       "hash": "sha256-5TOTPl8CYewaDoV5O7zvezQeA/NrXx3tzjstOMc2oN8="
     }
   },

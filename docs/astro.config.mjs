@@ -90,7 +90,7 @@ export default defineConfig({
         }),
       ],
       editLink: {
-        baseUrl: "https://github.com/vic/flake-file/edit/main/docs/",
+        baseUrl: "https://github.com/denful/flake-file/edit/main/docs/",
       },
       customCss: ["./src/styles/custom.css"],
     }),

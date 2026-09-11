@@ -6,14 +6,14 @@ description: Migrate a traditional flake to flake-file (no flake-parts)
 import { Aside } from '@astrojs/starlight/components';
 
 <Aside title="Working Example" icon="nix">
-You can use [`templates/minimal`](https://github.com/vic/flake-file/tree/main/templates/minimal) as a working example and safe sandbox to experiment.
+You can use [`templates/minimal`](https://github.com/denful/flake-file/tree/main/templates/minimal) as a working example and safe sandbox to experiment.
 </Aside>
 
 ## The bootstrap magic step.
 
 ```shell
 mv flake.nix flake-file.nix
-nix-shell https://github.com/vic/flake-file/archive/main.tar.gz -A flake-file.sh --run bootstrap
+nix-shell https://github.com/denful/flake-file/archive/main.tar.gz -A flake-file.sh --run bootstrap
 ```
 
 ## The new `flake.nix` (static Nix)
@@ -64,7 +64,7 @@ When your input changes, run it again to propagate your input changes into
 the **static** `flake.nix`.
 
 ```shell
-nix-shell https://github.com/vic/flake-file/archive/main.zip -A flake-file.sh --run bootstrap
+nix-shell https://github.com/denful/flake-file/archive/main.zip -A flake-file.sh --run bootstrap
 ```
 
 <Aside title="You are done!">

@@ -19,10 +19,10 @@ You can create a `flake.nix` from scratch — without running inside an existing
 
 ```shell "write-flake" "./flake-file.nix"
 # Write a minimal flake-file.nix file (or copy a flake.nix of yours)
-echo '{ inputs.flake-file.url = "github:vic/flake-file"; }' > flake-file.nix
+echo '{ inputs.flake-file.url = "github:denful/flake-file"; }' > flake-file.nix
 
 # Generate flake.nix or unflake.nix or npins from flake-file.nix
-nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
+nix-shell https://github.com/denful/flake-file/archive/refs/heads/main.zip \
   -A flake-file.sh --run write-flake --arg modules ./flake-file.nix
 ```
 
@@ -33,10 +33,10 @@ Replace `write-flake` with `write-inputs`, `write-unflake`, `write-tack`, or `wr
 
 ## Using a modules directory
 
-`bootstrap.nix` can also be a directory. All `.nix` files in it will be auto-imported using [import-tree](https://github.com/vic/import-tree):
+`bootstrap.nix` can also be a directory. All `.nix` files in it will be auto-imported using [import-tree](https://github.com/denful/import-tree):
 
 ```shell "./modules"
-nix-shell https://github.com/vic/flake-file/archive/refs/heads/main.zip \
+nix-shell https://github.com/denful/flake-file/archive/refs/heads/main.zip \
   -A flake-file.sh --run write-flake --arg modules ./modules
 ```
 
