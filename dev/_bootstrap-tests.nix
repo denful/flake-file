@@ -19,16 +19,6 @@ let
     outputs = _: { };
   };
 
-  broken-app = bootstrap {
-    inputs.empty.url = "github:vic/empty-flake";
-    outputs = _: { };
-    flake-file.apps.write-broken =
-      pkgs:
-      pkgs.runCommand "write-broken" { } ''
-        exit 1
-      '';
-  };
-
   all-inputs-schemes = bootstrap {
     inputs.simple.url = "github:vic/empty-flake";
     inputs.withBranch.url = "github:vic/empty-flake/main";
@@ -98,10 +88,22 @@ let
     name = "test-flake-public";
     runtimeInputs = [
       pkgs.nix
-      empty.write-flake
     ];
     text = ''
-      write-flake
+      nix-shell -E '
+        let
+          pkgs = import <nixpkgs> { };
+          ff = import ${./..} {
+            inherit pkgs;
+            outdir = "${outdir}";
+            modules = {
+              inputs.empty.url = "github:vic/empty-flake";
+              outputs = _: { };
+            };
+          };
+        in
+        ff.write-flake
+      ' --run write-flake
       cat ${outdir}/flake.nix
       grep github:vic/empty-flake ${outdir}/flake.nix
     '';
@@ -111,10 +113,25 @@ let
     name = "test-flake-public-ignores-broken-app";
     runtimeInputs = [
       pkgs.nix
-      broken-app.write-flake
     ];
     text = ''
-      write-flake
+      nix-shell -E '
+        let
+          pkgs = import <nixpkgs> { };
+          ff = import ${./..} {
+            inherit pkgs;
+            outdir = "${outdir}";
+            modules = {
+              inputs.empty.url = "github:vic/empty-flake";
+              outputs = _: { };
+              flake-file.apps.write-broken =
+                pkgs:
+                pkgs.runCommand "write-broken" { } "exit 1";
+            };
+          };
+        in
+        ff.write-flake
+      ' --run write-flake
       cat ${outdir}/flake.nix
       grep github:vic/empty-flake ${outdir}/flake.nix
     '';
