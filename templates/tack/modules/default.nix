@@ -3,8 +3,8 @@
   imports = [ inputs.flake-file.flakeModules.tack ];
 
   flake-file.inputs = {
-    flake-file.url = "github:vic/flake-file";
-    import-tree.url = "github:vic/import-tree";
+    flake-file.url = "github:denful/flake-file";
+    import-tree.url = "github:denful/import-tree";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     tack.url = "github:manic-systems/tack";

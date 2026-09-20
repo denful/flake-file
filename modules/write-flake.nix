@@ -6,8 +6,10 @@
 }@top:
 let
   inherit (import ./../dev/modules/_lib lib)
+    autoFollowIgnores
     inputsExpr
     isNonEmptyString
+    mergeAutoFollows
     priorityMapAttrsToList
     nixCode
     ;
@@ -15,6 +17,16 @@ let
   inherit (config.flake-file.style) sep sortPriority;
 
   flake-file = config.flake-file;
+  auto-follow = flake-file.auto-follow;
+
+  existingInputs =
+    if auto-follow.enable then (import "${top.inputs.self}/flake.nix").inputs or { } else { };
+
+  renderedInputs =
+    let
+      expr = flake-file.preProcess (inputsExpr flake-file.inputs);
+    in
+    if auto-follow.enable then mergeAutoFollows flake-file.inputs expr existingInputs else expr;
 
   unformatted =
     let
@@ -63,11 +75,12 @@ let
 
   flakeInputs = "inputs = ${
     nixCode {
-      expr = flake-file.preProcess (inputsExpr flake-file.inputs);
+      expr = renderedInputs;
       styles = [
         {
           attrSortPriority = sortPriority.inputs;
           attrSep = sep.inputs;
+          collapseAttrs = !auto-follow.enable;
         }
         {
           attrSortPriority = sortPriority.inputSchema;
@@ -98,6 +111,34 @@ let
       '';
     };
 
+  autoFollowConfig =
+    pkgs:
+    pkgs.writeText "flake-edit.toml" ''
+      [follow]
+      ignore = ${builtins.toJSON (autoFollowIgnores flake-file.inputs)}
+      transitive_min = 0
+      aliases = {}
+    '';
+
+  autoFollowCommand =
+    pkgs:
+    let
+      minimumVersion = "0.3.5";
+      package =
+        pkgs.flake-edit or (throw "flake-file auto-follow requires pkgs.flake-edit >= ${minimumVersion}");
+      version = package.version or "unknown";
+      flake-edit =
+        if lib.versionAtLeast version minimumVersion then
+          pkgs.lib.getExe package
+        else
+          throw "flake-file auto-follow requires pkgs.flake-edit >= ${minimumVersion}, but found ${version}";
+      configFile = autoFollowConfig pkgs;
+    in
+    ''
+      ${flake-edit} --no-lock --non-interactive --no-cache --config ${configFile} follow
+      ${pkgs.lib.getExe (flake-file.formatter pkgs)} flake.nix
+    '';
+
   write-flake =
     pkgs:
     let
@@ -110,12 +151,17 @@ let
     pkgs.writeShellApplication {
       name = "write-flake";
       meta.description = "Generate a flake.nix file";
-      runtimeInputs = [ pkgs.diffutils ];
+      runtimeInputs = [ pkgs.diffutils ] ++ lib.optionals auto-follow.enable [ pkgs.nix ];
       text = ''
         cd ${config.flake-file.intoPath}
         if ! cmp -s ${formatted pkgs} flake.nix; then
           cat ${formatted pkgs} > flake.nix
         fi
+        ${lib.optionalString auto-follow.enable ''
+          nix flake lock
+          ${autoFollowCommand pkgs}
+          nix flake lock --offline
+        ''}
         ${hooks}
       '';
     };
@@ -137,6 +183,13 @@ let
       ''
         set -e
         diff -u ${top.inputs.self}/flake.nix ${formatted pkgs}
+        ${lib.optionalString auto-follow.enable ''
+          cp ${top.inputs.self}/flake.nix flake.nix
+          cp ${top.inputs.self}/flake.lock flake.lock
+          chmod u+w flake.nix flake.lock
+          ${autoFollowCommand pkgs}
+          diff -u ${top.inputs.self}/flake.nix flake.nix
+        ''}
         ${hooks}
         touch $out
       '';

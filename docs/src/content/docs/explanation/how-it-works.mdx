@@ -37,7 +37,7 @@ Any Nix module can set `flake-file.*` options. Because this is the standard Nix 
 
 ```nix
 { inputs, lib, ... }: {
-  flake-file.inputs.nixpkgs.url = lib.mkDefault "github:NixOS/nixpkgs/nixpkgs-unstable";
+  flake-file.inputs.nixpkgs.url = lib.mkDefault "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   flake-file.inputs.nixpkgs-lib.follows = "nixpkgs";
 }
 ```

@@ -61,6 +61,7 @@ export default defineConfig({
             { label: "Templates", slug: "guides/templates" },
             { label: "The outputs Function", slug: "guides/outputs" },
             { label: "Hooks", slug: "guides/hooks" },
+            { label: "Automatic Follows", slug: "guides/auto-follow" },
             { label: "Lock Flattening", slug: "guides/lock-flattening" },
             {
               label: "flake-parts-builder",
@@ -89,7 +90,7 @@ export default defineConfig({
         }),
       ],
       editLink: {
-        baseUrl: "https://github.com/vic/flake-file/edit/main/docs/",
+        baseUrl: "https://github.com/denful/flake-file/edit/main/docs/",
       },
       customCss: ["./src/styles/custom.css"],
     }),
