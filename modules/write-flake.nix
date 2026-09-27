@@ -169,26 +169,40 @@ let
   check-flake-file =
     pkgs:
     let
+      # Copying all of self would change this check's hash on every commit.
+      prefix = "${toString top.inputs.self}/";
+      files = config.flake-file.check-files;
+      root = builtins.path {
+        name = "flake-root";
+        path = top.inputs.self;
+        filter =
+          path: type:
+          let
+            rel = lib.removePrefix prefix path;
+          in
+          lib.elem rel files || (type == "directory" && lib.any (lib.hasPrefix "${rel}/") files);
+      };
       hooks = lib.pipe config.flake-file.check-hooks [
         (lib.sortOn (i: i.index))
         (map (i: pkgs.lib.getExe (i.program pkgs)))
-        (map (p: "${p} ${top.inputs.self}"))
+        (map (p: "${p} ${root}"))
         (lib.concatStringsSep "\n")
       ];
     in
-    pkgs.runCommandLocal "check-flake-file"
+    pkgs.runCommand "check-flake-file"
       {
         nativeBuildInputs = [ pkgs.diffutils ];
+        preferLocalBuild = true;
       }
       ''
         set -e
-        diff -u ${top.inputs.self}/flake.nix ${formatted pkgs}
+        diff -u ${root}/flake.nix ${formatted pkgs}
         ${lib.optionalString auto-follow.enable ''
-          cp ${top.inputs.self}/flake.nix flake.nix
-          cp ${top.inputs.self}/flake.lock flake.lock
+          cp ${root}/flake.nix flake.nix
+          cp ${root}/flake.lock flake.lock
           chmod u+w flake.nix flake.lock
           ${autoFollowCommand pkgs}
-          diff -u ${top.inputs.self}/flake.nix flake.nix
+          diff -u ${root}/flake.nix flake.nix
         ''}
         ${hooks}
         touch $out

@@ -37,4 +37,19 @@ in
     type = lib.types.listOf hook;
   };
 
+  options.flake-file.check-files = lib.mkOption {
+    description = ''
+      Files, relative to the flake root, copied into the root seen by
+      check-flake-file and its check-hooks.
+
+      Only these files affect the check's derivation hash, so commits
+      touching anything else reuse a cached check result.
+    '';
+    type = lib.types.listOf lib.types.str;
+    default = [
+      "flake.nix"
+      "flake.lock"
+    ];
+  };
+
 }

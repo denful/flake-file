@@ -77,6 +77,7 @@ flake-file = {
 |---|---|---|
 | `flake-file.write-hooks` | `listOf hookType` | Ordered hooks run after `write-flake` writes the file |
 | `flake-file.check-hooks` | `listOf hookType` | Ordered hooks run during flake check |
+| `flake-file.check-files` | `listOf str` | Files (relative to the flake root) visible to the check and its hooks. Default: `flake.nix`, `flake.lock` |
 
 Each hook has:
 

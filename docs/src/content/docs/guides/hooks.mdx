@@ -33,6 +33,12 @@ Hooks run in ascending `index` order, so you can coordinate between modules with
 
 Use check-hooks to add extra validation during `nix flake check` — for example, checking that a derived file is up to date.
 
+Check hooks receive a copy of the flake root containing only the files listed in `flake-file.check-files` (default: `flake.nix` and `flake.lock`), so that commits touching other files keep the check cacheable. Add any file your hook reads:
+
+```nix
+{ flake-file.check-files = [ "flake.nix" "flake.lock" "generated/inputs.nix" ]; }
+```
+
 ```nix
 { pkgs, ... }: {
   flake-file.check-hooks = [
