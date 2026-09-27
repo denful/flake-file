@@ -10,18 +10,26 @@ flake-file provides two hook lists:
 - **`flake-file.write-hooks`** — commands executed after `write-flake` writes `flake.nix`.
 - **`flake-file.check-hooks`** — commands executed during `nix flake check`.
 
-Each hook is an attrset with an `index` (for ordering) and a command.
+Each hook is an attrset with an `index` (for ordering) and a `program`: a function from `pkgs` to a derivation with `meta.mainProgram`, such as one built by `pkgs.writeShellApplication`.
 
 ## write-hooks
 
 Use write-hooks to trigger follow-up actions whenever `flake.nix` is regenerated — for example, updating a lock file or reformatting.
 
+Write hooks run from the flake root with no arguments.
+
 ```nix
-{ pkgs, ... }: {
+{
   flake-file.write-hooks = [
     {
       index = 10;
-      exec = "${pkgs.nix}/bin/nix flake update";
+      program =
+        pkgs:
+        pkgs.writeShellApplication {
+          name = "update-lock";
+          runtimeInputs = [ pkgs.nix ];
+          text = "nix flake update";
+        };
     }
   ];
 }
@@ -33,12 +41,26 @@ Hooks run in ascending `index` order, so you can coordinate between modules with
 
 Use check-hooks to add extra validation during `nix flake check` — for example, checking that a derived file is up to date.
 
+Check hooks receive a copy of the flake root containing only the files listed in `flake-file.check-files` (default: `flake.nix` and `flake.lock`), so that commits touching other files keep the check cacheable. Add any file your hook reads:
+
 ```nix
-{ pkgs, ... }: {
+{ flake-file.check-files = [ "flake.nix" "flake.lock" "generated/inputs.nix" ]; }
+```
+
+Check hooks run inside the check derivation and receive the path of the flake root as their first argument.
+
+```nix
+{
   flake-file.check-hooks = [
     {
       index = 10;
-      exec = "${pkgs.my-linter}/bin/my-linter --check .";
+      program =
+        pkgs:
+        pkgs.writeShellApplication {
+          name = "lint";
+          runtimeInputs = [ pkgs.my-linter ];
+          text = ''my-linter --check "$1"'';
+        };
     }
   ];
 }
