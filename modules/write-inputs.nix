@@ -31,7 +31,7 @@ let
       text = ''
         cd ${flake-file.intoPath}
         cat ${inputsFile pkgs} > "''${1:-inputs.nix}"
-        ${lib.getExe pkgs.nixfmt} "''${1:-inputs.nix}"
+        ${lib.getExe (flake-file.formatter pkgs)} "''${1:-inputs.nix}"
       '';
     };
 
