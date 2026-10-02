@@ -10,7 +10,7 @@
       "branch": "main",
       "submodules": false,
       "revision": "3daadf37de2bb85b0ff34e2a7ab0d71e077c2b9e",
-      "url": "https://github.com/vic/flake-file/archive/3daadf37de2bb85b0ff34e2a7ab0d71e077c2b9e.tar.gz",
+      "url": "https://github.com/denful/flake-file/archive/3daadf37de2bb85b0ff34e2a7ab0d71e077c2b9e.tar.gz",
       "hash": "sha256-w2LoQVM6DXrSdGUZBZqa1nYkMzHoB0t82DrptzZKhTs="
     },
     "flake-parts": {
@@ -36,7 +36,7 @@
       "branch": "main",
       "submodules": false,
       "revision": "c41e7d58045f9057880b0d85e1152d6a4430dbf1",
-      "url": "https://github.com/vic/import-tree/archive/c41e7d58045f9057880b0d85e1152d6a4430dbf1.tar.gz",
+      "url": "https://github.com/denful/import-tree/archive/c41e7d58045f9057880b0d85e1152d6a4430dbf1.tar.gz",
       "hash": "sha256-BtZ2dtkBdSUnFPPFc+n0kcMbgaTxzFNPv2iaO326Ffg="
     },
     "nixpkgs": {
@@ -78,7 +78,7 @@
       "submodules": false,
       "version": "v0.3.0",
       "revision": "920b35279fb800c147017c8332e04a3daa994af4",
-      "url": "https://api.github.com/repos/vic/with-inputs/tarball/refs/tags/v0.3.0",
+      "url": "https://api.github.com/repos/denful/with-inputs/tarball/refs/tags/v0.3.0",
       "hash": "sha256-3rNFfdLJ/nivZkgBoVi+M8tJQQpupuojaHyNig1Qzrs="
     }
   },

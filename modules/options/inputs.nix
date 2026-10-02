@@ -12,6 +12,16 @@ let
     type = lib.types.lazyAttrsOf (
       lib.types.submodule {
         options = {
+          autoFollow = lib.mkOption {
+            description = ''
+              Whether `flake-edit follow` may automatically add a follows declaration
+              for this nested input. Set to false to exclude this input from automatic
+              following. This cannot be combined with a configured follows value when
+              automatic follows are enabled.
+            '';
+            default = true;
+            type = lib.types.bool;
+          };
           follows = follows-option;
           inputs = inputs-follow-option;
         };

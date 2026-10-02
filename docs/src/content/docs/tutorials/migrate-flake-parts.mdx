@@ -64,7 +64,7 @@ Second is also moving the <strong>`(A)`</strong> inputs into `./modules`
 And now, lets replace `flake.nix` using bootstrapping magic step: 
 
 ```shell "./modules" "flake-parts"
-nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
+nix-shell https://github.com/denful/flake-file/archive/main.tar.gz \
   -A flake-file.sh --run write-flake \
   --arg modules ./modules --argstr outputs flake-parts
 ```
@@ -93,7 +93,7 @@ Edit `./modules/inputs.nix` module to add in-flake flake-file.
     flake-file.inputs = {
 
       # make sure you add flake-file dependency.
-+     flake-file.url = lib.mkDefault "github:vic/flake-file";
++     flake-file.url = lib.mkDefault "github:denful/flake-file";
     };
 
     imports = [

@@ -11,7 +11,7 @@
     type = lib.types.functionTo lib.types.unspecified;
     default = pkgs: pkgs.nixfmt;
     example = lib.literalExample ''
-      pkgs: pkgs.nixfmt-rfc-style
+      pkgs: pkgs.nixfmt-rs
     '';
   };
 }

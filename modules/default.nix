@@ -5,6 +5,7 @@ let
       default # for flake-parts flakes (keep as default for compatibility)
       allfollow
       nix-auto-follow
+      auto-follow
       dendritic
       import-tree
       npins
@@ -60,6 +61,8 @@ let
   allfollow.imports = [ ./prune-lock/allfollow.nix ];
 
   nix-auto-follow.imports = [ ./prune-lock/nix-auto-follow.nix ];
+
+  auto-follow.imports = [ ./auto-follow.nix ];
 
   import-tree.imports = [ ./import-tree.nix ];
 

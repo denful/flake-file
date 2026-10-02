@@ -38,7 +38,7 @@ or in a separate `./flake-file.nix` file.
 # flake-file.nix
 {
   flake-file.inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
   };
 }
 ```
@@ -53,7 +53,7 @@ to rename your existing directory first.
 And now, lets generate `./npins` from `./flake-file.nix`.
 
 ```shell "./flake-file.nix" "write-npins"
-nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
+nix-shell https://github.com/denful/flake-file/archive/main.tar.gz \
   -A flake-file.sh --run write-npins --arg modules ./flake-file.nix
 ```
 
@@ -117,7 +117,7 @@ outputs
 To update npins from inputs at ./modules do:
 
 ```shell "./modules" "write-npins"
-nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
+nix-shell https://github.com/denful/flake-file/archive/main.tar.gz \
   -A flake-file.sh --run write-npins --arg modules ./modules
 ```
 
@@ -125,4 +125,4 @@ nix-shell https://github.com/vic/flake-file/archive/main.tar.gz \
 
 If you wish to have flake-like resolved inputs
 to use flakes from non-flake world, take a
-look at [with-inputs.nix](https://github.com/vic/flake-file/tree/main/templates/npins/with-inputs.nix) used by [templates/npins](https://github.com/vic/flake-file/tree/main/templates/npins/default.nix)
+look at [with-inputs.nix](https://github.com/denful/flake-file/tree/main/templates/npins/with-inputs.nix) used by [templates/npins](https://github.com/denful/flake-file/tree/main/templates/npins/default.nix)
