@@ -77,13 +77,14 @@ flake-file = {
 |---|---|---|
 | `flake-file.write-hooks` | `listOf hookType` | Ordered hooks run after `write-flake` writes the file |
 | `flake-file.check-hooks` | `listOf hookType` | Ordered hooks run during flake check |
+| `flake-file.check-files` | `listOf str` | Files (relative to the flake root) visible to the check and its hooks. Default: `flake.nix`, `flake.lock` |
 
 Each hook has:
 
 | Field | Description |
 |---|---|
 | `index` | Integer — lower index runs first |
-| `exec` | Shell command string to execute |
+| `program` | Function from `pkgs` to a derivation with `meta.mainProgram`. Write hooks run it from the flake root; check hooks pass the flake root path as the first argument |
 
 ## Lock Flattening Options
 
