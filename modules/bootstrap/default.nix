@@ -1,6 +1,7 @@
 {
   pkgs ? import <nixpkgs> { },
   modules ? [ ],
+  bootstrap ? [ ],
   outdir ? ".",
   inputs ? null,
   outputs ? null,
@@ -20,6 +21,19 @@ let
 
   tree = (import import-tree) modules;
 
+  bootstrapModule =
+    if bootstrap == true then
+      ./inputs.nix
+    else if builtins.isList bootstrap then
+      let
+        allInputs = (import ./inputs.nix { inherit lib; }).flake-file.inputs;
+      in
+      { flake-file.inputs = lib.filterAttrs (name: _: builtins.elem name bootstrap) allInputs; }
+    else if bootstrap == false then
+      { }
+    else
+      throw "flake-file bootstrap must be true, false, or a list of input names";
+
   attrsOpt = lib.mkOption {
     default = { };
     type = lib.types.submodule { freeformType = lib.types.lazyAttrsOf lib.types.unspecified; };
@@ -27,6 +41,7 @@ let
 
   module = {
     imports = [
+      bootstrapModule
       tree
       ./../default.nix
       ./../options

@@ -48,6 +48,36 @@ let
     inputs.flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
+  bootstrap-all = import ./.. (
+    args
+    // {
+      bootstrap = true;
+      modules = { outputs = _: { }; };
+    }
+  );
+
+  bootstrap-selected = import ./.. (
+    args
+    // {
+      bootstrap = [
+        "flake-file"
+        "nixpkgs"
+      ];
+      modules = { outputs = _: { }; };
+    }
+  );
+
+  bootstrap-override = import ./.. (
+    args
+    // {
+      bootstrap = true;
+      modules = {
+        inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+        outputs = _: { };
+      };
+    }
+  );
+
   flake-parts-follows = bootstrap {
     inputs.nixpkgs-lib.url = "github:vic/empty-flake";
     inputs.flake-parts.url = "github:hercules-ci/flake-parts";
@@ -81,6 +111,49 @@ let
       write-flake
       cat ${outdir}/flake.nix
       grep github:vic/empty-flake ${outdir}/flake.nix
+    '';
+  };
+
+  test-bootstrap-all-inputs = pkgs.writeShellApplication {
+    name = "test-bootstrap-all-inputs";
+    runtimeInputs = [
+      (bootstrap-all.flake-file.apps.write-inputs pkgs)
+    ];
+    text = ''
+      write-inputs
+      grep github:vic/import-tree ${outdir}/inputs.nix
+      grep github:vic/flake-file ${outdir}/inputs.nix
+      grep github:hercules-ci/flake-parts ${outdir}/inputs.nix
+      grep nixpkgs-unstable ${outdir}/inputs.nix
+    '';
+  };
+
+  test-bootstrap-selected-inputs = pkgs.writeShellApplication {
+    name = "test-bootstrap-selected-inputs";
+    runtimeInputs = [
+      (bootstrap-selected.flake-file.apps.write-inputs pkgs)
+    ];
+    text = ''
+      write-inputs
+      grep github:vic/flake-file ${outdir}/inputs.nix
+      grep nixpkgs-unstable ${outdir}/inputs.nix
+      if grep github:vic/import-tree ${outdir}/inputs.nix; then
+        exit 1
+      fi
+      if grep github:hercules-ci/flake-parts ${outdir}/inputs.nix; then
+        exit 1
+      fi
+    '';
+  };
+
+  test-bootstrap-input-override = pkgs.writeShellApplication {
+    name = "test-bootstrap-input-override";
+    runtimeInputs = [
+      (bootstrap-override.flake-file.apps.write-inputs pkgs)
+    ];
+    text = ''
+      write-inputs
+      grep github:nixos/nixpkgs/nixos-unstable ${outdir}/inputs.nix
     '';
   };
 
@@ -246,6 +319,9 @@ pkgs.mkShell {
   buildInputs = [
     test-inputs
     test-flake
+    test-bootstrap-all-inputs
+    test-bootstrap-selected-inputs
+    test-bootstrap-input-override
     test-unflake
     test-npins
     test-npins-schemes
