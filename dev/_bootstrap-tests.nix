@@ -121,10 +121,10 @@ let
     ];
     text = ''
       write-inputs
-      grep github:vic/import-tree ${outdir}/inputs.nix
-      grep github:vic/flake-file ${outdir}/inputs.nix
+      grep github:denful/import-tree ${outdir}/inputs.nix
+      grep github:denful/flake-file ${outdir}/inputs.nix
       grep github:hercules-ci/flake-parts ${outdir}/inputs.nix
-      grep nixpkgs-unstable ${outdir}/inputs.nix
+      grep channels.nixos.org/nixpkgs-unstable ${outdir}/inputs.nix
     '';
   };
 
@@ -135,9 +135,9 @@ let
     ];
     text = ''
       write-inputs
-      grep github:vic/flake-file ${outdir}/inputs.nix
-      grep nixpkgs-unstable ${outdir}/inputs.nix
-      if grep github:vic/import-tree ${outdir}/inputs.nix; then
+      grep github:denful/flake-file ${outdir}/inputs.nix
+      grep channels.nixos.org/nixpkgs-unstable ${outdir}/inputs.nix
+      if grep github:denful/import-tree ${outdir}/inputs.nix; then
         exit 1
       fi
       if grep github:hercules-ci/flake-parts ${outdir}/inputs.nix; then
@@ -154,6 +154,59 @@ let
     text = ''
       write-inputs
       grep github:nixos/nixpkgs/nixos-unstable ${outdir}/inputs.nix
+    '';
+  };
+
+  test-flake-public = pkgs.writeShellApplication {
+    name = "test-flake-public";
+    runtimeInputs = [
+      pkgs.nix
+    ];
+    text = ''
+      nix-shell -E '
+        let
+          pkgs = import <nixpkgs> { };
+          ff = import ${./..} {
+            inherit pkgs;
+            outdir = "${outdir}";
+            modules = {
+              inputs.empty.url = "github:vic/empty-flake";
+              outputs = _: { };
+            };
+          };
+        in
+        ff.write-flake
+      ' --run write-flake
+      cat ${outdir}/flake.nix
+      grep github:vic/empty-flake ${outdir}/flake.nix
+    '';
+  };
+
+  test-flake-public-ignores-broken-app = pkgs.writeShellApplication {
+    name = "test-flake-public-ignores-broken-app";
+    runtimeInputs = [
+      pkgs.nix
+    ];
+    text = ''
+      nix-shell -E '
+        let
+          pkgs = import <nixpkgs> { };
+          ff = import ${./..} {
+            inherit pkgs;
+            outdir = "${outdir}";
+            modules = {
+              inputs.empty.url = "github:vic/empty-flake";
+              outputs = _: { };
+              flake-file.apps.write-broken =
+                pkgs:
+                pkgs.runCommand "write-broken" { } "exit 1";
+            };
+          };
+        in
+        ff.write-flake
+      ' --run write-flake
+      cat ${outdir}/flake.nix
+      grep github:vic/empty-flake ${outdir}/flake.nix
     '';
   };
 
@@ -322,6 +375,8 @@ pkgs.mkShell {
     test-bootstrap-all-inputs
     test-bootstrap-selected-inputs
     test-bootstrap-input-override
+    test-flake-public
+    test-flake-public-ignores-broken-app
     test-unflake
     test-npins
     test-npins-schemes
