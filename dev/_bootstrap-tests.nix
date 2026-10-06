@@ -52,7 +52,9 @@ let
     args
     // {
       bootstrap = true;
-      modules = { outputs = _: { }; };
+      modules = {
+        outputs = _: { };
+      };
     }
   );
 
@@ -63,7 +65,9 @@ let
         "flake-file"
         "nixpkgs"
       ];
-      modules = { outputs = _: { }; };
+      modules = {
+        outputs = _: { };
+      };
     }
   );
 

@@ -28,7 +28,9 @@ let
       let
         allInputs = (import ./inputs.nix { inherit lib; }).flake-file.inputs;
       in
-      { flake-file.inputs = lib.filterAttrs (name: _: builtins.elem name bootstrap) allInputs; }
+      {
+        flake-file.inputs = lib.filterAttrs (name: _: builtins.elem name bootstrap) allInputs;
+      }
     else if bootstrap == false then
       { }
     else
