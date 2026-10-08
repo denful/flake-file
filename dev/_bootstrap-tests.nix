@@ -19,6 +19,11 @@ let
     outputs = _: { };
   };
 
+  tack-test = bootstrap {
+    inputs.empty.url = "https://github.com/denful/empty-flake/archive/d4e905be37fc824f49a14577a26e6121f59e4f9d.tar.gz";
+    outputs = _: { };
+  };
+
   all-inputs-schemes = bootstrap {
     inputs.simple.url = "github:vic/empty-flake";
     inputs.withBranch.url = "github:vic/empty-flake/main";
@@ -333,13 +338,13 @@ let
   test-tack = pkgs.writeShellApplication {
     name = "test-tack";
     runtimeInputs = [
-      (empty.flake-file.apps.write-tack pkgs)
+      (tack-test.flake-file.apps.write-tack pkgs)
       pkgs.jq
     ];
     text = ''
       write-tack
       cat ${outdir}/.tack/pins.toml
-      grep github:vic/empty-flake ${outdir}/.tack/pins.toml
+      grep https://github.com/denful/empty-flake/archive/ ${outdir}/.tack/pins.toml
       jq -e 'has("empty")' ${outdir}/.tack/pins.lock.json
       [ -e ${outdir}/.tack/default.nix ]
     '';
@@ -348,7 +353,7 @@ let
   test-write-lock-tack = pkgs.writeShellApplication {
     name = "test-write-lock-tack";
     runtimeInputs = [
-      (empty.flake-file.apps.write-lock pkgs)
+      (tack-test.flake-file.apps.write-lock pkgs)
       pkgs.jq
     ];
     text = ''
