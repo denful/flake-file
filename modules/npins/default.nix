@@ -29,21 +29,26 @@ let
     lib.concatStringsSep "\n"
       (lib.mapAttrsToList (name: input: "${name}\t${inputUrl input}") pinnableInputs);
 
-  # Collect names of inputs that are explicitly skipped (follows = "") at any nesting level.
-  collectSkipped =
+  # Collect names of inputs that set `follows` (to another input, or "" to drop it) at any
+  # nesting level: such an input is never fetched under its own name, so it needs no pin.
+  collectFollowing =
     inputMap:
     lib.concatLists (
       lib.mapAttrsToList (
         name: input:
         let
-          here = lib.optional (input ? follows && input.follows == "") name;
-          nested = if input ? inputs then collectSkipped input.inputs else [ ];
+          here = lib.optional (input ? follows) name;
+          nested = if input ? inputs then collectFollowing input.inputs else [ ];
         in
         here ++ nested
       ) inputMap
     );
 
-  skipSet = lib.concatStringsSep "\n" (collectSkipped inputs);
+  # Pins share one flat namespace, so a declared top-level input keeps its pin even when a
+  # nested input of the same name follows something.
+  skipSet = lib.concatStringsSep "\n" (
+    lib.subtractLists (lib.attrNames pinnableInputs) (collectFollowing inputs)
+  );
 
   write-npins =
     pkgs:
