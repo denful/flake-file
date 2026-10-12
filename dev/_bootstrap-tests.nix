@@ -64,6 +64,18 @@ let
     outputs = _: { };
   };
 
+  pin-untracked = bootstrap {
+    inputs.foo.url = "github:denful/empty-flake";
+    flake-file.trackPinUrls = false;
+    outputs = _: { };
+  };
+
+  pin-untracked-moved = bootstrap {
+    inputs.foo.url = "github:vic/import-tree";
+    flake-file.trackPinUrls = false;
+    outputs = _: { };
+  };
+
   pin-missing = bootstrap {
     inputs.empty.url = "github:denful/empty-flake";
     inputs.missing.url = "github:denful/no-such-repo-for-flake-file-tests";
@@ -458,6 +470,21 @@ let
     '';
   };
 
+  # With trackPinUrls = false no sidecar is written and an existing pin is never re-added.
+  test-npins-untracked = pkgs.writeShellApplication {
+    name = "test-npins-untracked";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      lock=${outdir}/npins/sources.json
+      ${pin-untracked.flake-file.apps.write-npins pkgs}/bin/write-npins
+      jq -e '.pins.foo.repository.repo == "empty-flake"' "$lock"
+      test ! -e ${outdir}/npins/flake-file-urls.tsv
+      ${pin-untracked-moved.flake-file.apps.write-npins pkgs}/bin/write-npins
+      jq -e '.pins.foo.repository.repo == "empty-flake"' "$lock"
+      test ! -e ${outdir}/npins/flake-file-urls.tsv
+    '';
+  };
+
   # A changed URL re-pins; an unchanged one leaves the locked revision alone.
   test-npins-repin = pkgs.writeShellApplication {
     name = "test-npins-repin";
@@ -709,6 +736,7 @@ pkgs.mkShell {
     test-npins-follows-other
     test-npins-transitive
     test-npins-repin
+    test-npins-untracked
     test-npins-missing
     test-npins-url-attrs
     test-npins-unrepresentable

@@ -92,11 +92,23 @@ let
       runtimeEnv = {
         out = flake-file.intoPath;
         inherit queueSeed skipSet;
+        trackPinUrls = if flake-file.trackPinUrls then "1" else "";
       };
       text = builtins.readFile backend + builtins.readFile ./queue.bash;
     };
 in
 {
+  options.flake-file.trackPinUrls = lib.mkOption {
+    type = lib.types.bool;
+    default = true;
+    description = ''
+      Record the URL each pin was added from in a sidecar next to the lock
+      (`npins/flake-file-urls.tsv`, `lon-flake-file-urls.tsv` or `nix/flake-file-urls.tsv`),
+      so a pin is re-added when its declared URL changes. With `false`, no sidecar is
+      written and an existing pin is never re-added; delete it to re-pin.
+    '';
+  };
+
   options.flake-file.pinWriter = lib.mkOption {
     internal = true;
     readOnly = true;

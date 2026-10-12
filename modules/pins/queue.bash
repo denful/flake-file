@@ -121,7 +121,7 @@ discover_transitive() {
 # The URL each pin was added from, in a sidecar the writer owns: a pin is re-added only
 # when its declared URL changes, so an unchanged input keeps its locked revision.
 declare -A recorded=() pinned=()
-if [ -f "$pin_urls_file" ]; then
+if [ -n "$trackPinUrls" ] && [ -f "$pin_urls_file" ]; then
     while IFS=$'\t' read -r rname rurl; do recorded[$rname]="$rurl"; done < "$pin_urls_file"
 fi
 failed=()
@@ -154,9 +154,11 @@ for existing in $(pin_names); do
     fi
 done
 
-for pname in "${!pinned[@]}"; do
+if [ -n "$trackPinUrls" ]; then
+    for pname in "${!pinned[@]}"; do
     printf '%s\t%s\n' "$pname" "${pinned[$pname]}"
-done | LC_ALL=C sort > "$pin_urls_file"
+    done | LC_ALL=C sort > "$pin_urls_file"
+fi
 
 if [ "${#failed[@]}" -gt 0 ]; then
     echo "flake-file: failed to pin: ${failed[*]}" >&2
