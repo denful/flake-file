@@ -49,6 +49,11 @@ let
     inputs.followsSimple.follows = "simple";
   };
 
+  dotted-name = bootstrap {
+    inputs."nixpkgs-25.05".url = "github:denful/empty-flake";
+    outputs = _: { };
+  };
+
   flake-parts = bootstrap {
     inputs.flake-parts.url = "github:hercules-ci/flake-parts";
   };
@@ -126,6 +131,20 @@ let
       write-flake
       cat ${outdir}/flake.nix
       grep github:denful/empty-flake ${outdir}/flake.nix
+    '';
+  };
+
+  test-flake-quoted-name = pkgs.writeShellApplication {
+    name = "test-flake-quoted-name";
+    runtimeInputs = [
+      pkgs.nix
+      (dotted-name.flake-file.apps.write-flake pkgs)
+    ];
+    text = ''
+      write-flake
+      cat ${outdir}/flake.nix
+      nix-instantiate --parse ${outdir}/flake.nix > /dev/null
+      grep -F '"nixpkgs-25.05".url' ${outdir}/flake.nix
     '';
   };
 
@@ -510,6 +529,7 @@ pkgs.mkShell {
   buildInputs = [
     test-inputs
     test-flake
+    test-flake-quoted-name
     test-flake-stale-lock-flake-attr
     test-bootstrap-all-inputs
     test-bootstrap-selected-inputs

@@ -156,8 +156,9 @@ let
     );
 
   nixAttr =
-    collapse: name: value:
+    collapse: rawName: value:
     let
+      name = lib.strings.escapeNixIdentifier rawName;
       childIsAttr = builtins.isAttrs value;
       childIsOne = builtins.length (builtins.attrNames value) == 1;
       nested = lib.head (lib.mapAttrsToList (nixAttr collapse) value);
@@ -251,6 +252,8 @@ let
         ))
         (values: "[ ${lib.concatStringsSep " " values} ]")
       ]
+    else if expr == null then
+      "null"
     else if expr == true then
       "true"
     else if expr == false then
