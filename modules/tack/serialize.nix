@@ -15,6 +15,37 @@ let
 
   str = s: ''"${lib.escape [ ''"'' "\\" ] s}"'';
 
+  # tack reads host and rev only from the url query, and host only on gitlab: urls
+  representable =
+    inp:
+    [
+      "url"
+      "dir"
+      "submodules"
+      "flake"
+      "inputs"
+      "tackType"
+      "unpack"
+    ]
+    ++ optionals ((inp.url or "") == "") [
+      "type"
+      "owner"
+      "repo"
+      "ref"
+      "rev"
+    ]
+    ++ optional ((inp.url or "") == "" && (inp.type or null) == "gitlab") "host";
+
+  checkInput =
+    name: inp:
+    let
+      unsupported = lib.subtractLists (representable inp) (builtins.attrNames inp);
+    in
+    if unsupported != [ ] then
+      throw "tack serialize: input '${name}' sets ${concatStringsSep ", " unsupported}, which pins.toml cannot represent"
+    else
+      inp;
+
   inputUrl =
     name: inp:
     if (inp.url or "") != "" then
@@ -22,9 +53,13 @@ let
     else
       let
         ref = if (inp.ref or "") != "" then "/${inp.ref}" else "";
+        query =
+          optional ((inp.host or "") != "") "host=${inp.host}"
+          ++ optional ((inp.rev or "") != "") "rev=${inp.rev}";
       in
       if (inp.type or null) != null && (inp.owner or "") != "" then
         "${inp.type}:${inp.owner}/${inp.repo or ""}${ref}"
+        + lib.optionalString (query != [ ]) "?${concatStringsSep "&" query}"
       else
         throw "tack serialize: input '${name}' has no url and cannot synthesise one";
 
@@ -38,12 +73,16 @@ let
       null;
 
   followsTable =
-    inp:
+    name: inp:
     let
       nested = inp.inputs or { };
       pairs = filterAttrs (_: v: (v.follows or null) != null) nested;
+      deep = lib.attrNames (filterAttrs (_: v: v ? inputs) nested);
     in
-    if pairs == { } then
+    # tack follows reach only a pin's direct inputs
+    if deep != [ ] then
+      throw "tack serialize: input '${name}' sets follows below ${concatStringsSep ", " deep}, which pins.toml cannot represent"
+    else if pairs == { } then
       null
     else
       "{ "
@@ -51,7 +90,10 @@ let
       + " }";
 
   renderInput =
-    name: inp:
+    name: input:
+    let
+      inp = checkInput name input;
+    in
     concatStringsSep "\n" (
       [
         "[inputs.${renderKey name}]"
@@ -61,7 +103,7 @@ let
       ++ optional ((inp.dir or "") != "") "dir = ${str inp.dir}"
       ++ optional ((inp.submodules or null) == true) "submodules = true"
       ++ optional ((inp.unpack or null) != null) "unpack = ${str inp.unpack}"
-      ++ optional (followsTable inp != null) "follows = ${followsTable inp}"
+      ++ optional (followsTable name inp != null) "follows = ${followsTable name inp}"
     );
 
   renderShorturls =

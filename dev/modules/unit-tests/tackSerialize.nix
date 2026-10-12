@@ -122,6 +122,66 @@ let
       + "\n\n[all_follow]\nnixpkgs = [\"nixpkgs-stable\", \"nixpkgs-unstable\"]\nsystems = \"systems\"\n";
   };
 
+  tests.tackSerialize."test rev synthesises rev query" = {
+    expr = serialize {
+      inputs.foo = {
+        type = "github";
+        owner = "a";
+        repo = "b";
+        ref = "main";
+        rev = "abc";
+      };
+    };
+    expected = header + "\n\n[inputs.foo]\nurl = \"github:a/b/main?rev=abc\"\n";
+  };
+
+  tests.tackSerialize."test gitlab host synthesises host query" = {
+    expr = serialize {
+      inputs.foo = {
+        type = "gitlab";
+        host = "gitlab.example.org";
+        owner = "a";
+        repo = "b";
+      };
+    };
+    expected = header + "\n\n[inputs.foo]\nurl = \"gitlab:a/b?host=gitlab.example.org\"\n";
+  };
+
+  tests.tackSerialize."test github host throws" = {
+    expr =
+      (builtins.tryEval (serialize {
+        inputs.foo = {
+          type = "github";
+          host = "ghe.example.org";
+          owner = "a";
+          repo = "b";
+        };
+      })).success;
+    expected = false;
+  };
+
+  tests.tackSerialize."test rev beside url throws" = {
+    expr =
+      (builtins.tryEval (serialize {
+        inputs.foo = {
+          url = "github:a/b";
+          rev = "abc";
+        };
+      })).success;
+    expected = false;
+  };
+
+  tests.tackSerialize."test nested follows throws" = {
+    expr =
+      (builtins.tryEval (serialize {
+        inputs.foo = {
+          url = "x";
+          inputs.bar.inputs.baz.follows = "nixpkgs";
+        };
+      })).success;
+    expected = false;
+  };
+
   tests.tackSerialize."test inputs sorted by name" = {
     expr = serialize {
       inputs.zeta.url = "z";
