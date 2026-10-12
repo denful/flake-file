@@ -4,7 +4,7 @@
       "type": "Git",
       "repository": {
         "type": "GitHub",
-        "owner": "vic",
+        "owner": "denful",
         "repo": "flake-file"
       },
       "branch": "main",
@@ -17,7 +17,7 @@
       "type": "Git",
       "repository": {
         "type": "GitHub",
-        "owner": "vic",
+        "owner": "denful",
         "repo": "import-tree"
       },
       "branch": "main",
@@ -27,15 +27,17 @@
       "hash": "sha256-4TRO+jUycfR3g4KAbyK0wQEEJ7Xcmid2Ry+tWv4HPLw="
     },
     "nixpkgs": {
-      "type": "Tarball",
-      "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst",
-      "hash": "sha256-5xZ8rQTzV4cSAPMvIZpVpF05p5iwUnEuONeelwseA4g="
+      "type": "Channel",
+      "name": "nixpkgs-unstable",
+      "artifact": "nixexprs.tar.xz",
+      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1088030.8edc0c72e3a3/nixexprs.tar.xz",
+      "hash": "sha256-6BIvCXtdLW4HQwsOGkgH444aB3vCbHypE9TA78ireh8="
     },
     "with-inputs": {
       "type": "GitRelease",
       "repository": {
         "type": "GitHub",
-        "owner": "vic",
+        "owner": "denful",
         "repo": "with-inputs"
       },
       "pre_releases": false,
@@ -48,5 +50,5 @@
       "hash": "sha256-5TOTPl8CYewaDoV5O7zvezQeA/NrXx3tzjstOMc2oN8="
     }
   },
-  "version": 7
+  "version": 8
 }

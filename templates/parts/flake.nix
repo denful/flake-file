@@ -3,11 +3,6 @@
 {
   outputs = inputs: import ./outputs.nix inputs;
 
-  nixConfig = {
-    extraSubstituters = [ ];
-    extraTrustedPublicKeys = [ ];
-  };
-
   inputs = {
     flake-file.url = "github:denful/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";

@@ -86,7 +86,7 @@ jobs:
     needs: [nix-fmt]
     name: Check npins
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'npins') }}
+    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'npins') }}
     steps:
       - uses: actions/checkout@v4
       - uses: wimpysworld/nothing-but-nix@v10
@@ -96,13 +96,13 @@ jobs:
           set -e -o pipefail
           cd templates/npins
           sed -i 's/# flake-file = import/flake-file = import/' default.nix
-          echo "{ inputs, ... }: { npins.pkgs = import inputs.nixpkgs {}; }" | tee modules/pkgs.nix
+          echo "{ inputs, ... }: { flake-file.pkgs = import inputs.nixpkgs {}; }" | tee modules/pkgs.nix
           nix-shell . -A flake-file.sh --run write-npins
   flakeless-parts:
     needs: [nix-fmt]
     name: Check flakeless-parts
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'flakeless-parts') }}
+    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'flakeless-parts') }}
     steps:
       - uses: actions/checkout@v4
       - uses: wimpysworld/nothing-but-nix@v10
@@ -117,7 +117,7 @@ jobs:
     needs: [nix-fmt]
     name: Check unflake
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'unflake') }}
+    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'unflake') }}
     env:
       NIX_PATH: "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz"
     steps:
@@ -134,7 +134,7 @@ jobs:
     needs: [nix-fmt]
     name: Check tack
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'tack') }}
+    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'tack') }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
     steps:

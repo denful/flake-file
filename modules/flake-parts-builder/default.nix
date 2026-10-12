@@ -16,10 +16,13 @@ let
   metaToConfig = meta: {
     flake-file = {
       inputs = if meta ? inputs then meta.inputs else { };
-      nixConfig = {
-        extraSubstituters = if meta ? extraSubstituters then meta.extraSubstituters else [ ];
-        extraTrustedPublicKeys = if meta ? extraTrustedPublicKeys then meta.extraTrustedPublicKeys else [ ];
-      };
+      nixConfig =
+        lib.optionalAttrs (meta.extraSubstituters or [ ] != [ ]) {
+          extra-substituters = meta.extraSubstituters;
+        }
+        // lib.optionalAttrs (meta.extraTrustedPublicKeys or [ ] != [ ]) {
+          extra-trusted-public-keys = meta.extraTrustedPublicKeys;
+        };
     };
   };
 
