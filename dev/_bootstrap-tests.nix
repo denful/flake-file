@@ -129,6 +129,25 @@ let
     '';
   };
 
+  test-flake-stale-lock-flake-attr = pkgs.writeShellApplication {
+    name = "test-flake-stale-lock-flake-attr";
+    runtimeInputs = [
+      pkgs.gnugrep
+      (empty.flake-file.apps.write-flake pkgs)
+    ];
+    text = ''
+      lock() {
+        printf '{"nodes":{"root":{"inputs":{"empty":"empty"}},"empty":{"locked":{"type":"github"}%s}},"root":"root","version":7}' "$1" > ${outdir}/flake.lock
+      }
+      lock ',"flake":false'
+      write-flake 2> ${outdir}/stale.err
+      grep -F 'nix flake update empty' ${outdir}/stale.err
+      lock ""
+      write-flake 2> ${outdir}/fresh.err
+      if grep -F 'flake-file:' ${outdir}/fresh.err; then exit 1; fi
+    '';
+  };
+
   test-bootstrap-all-inputs = pkgs.writeShellApplication {
     name = "test-bootstrap-all-inputs";
     runtimeInputs = [
@@ -402,6 +421,7 @@ pkgs.mkShell {
   buildInputs = [
     test-inputs
     test-flake
+    test-flake-stale-lock-flake-attr
     test-bootstrap-all-inputs
     test-bootstrap-selected-inputs
     test-bootstrap-input-override
