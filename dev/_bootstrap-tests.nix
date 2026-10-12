@@ -109,6 +109,27 @@ let
     inputs.flake-parts.inputs.nixpkgs-lib.follows = "";
   };
 
+  parts-builder =
+    meta:
+    bootstrap {
+      imports = [ (import ./../modules/flake-parts-builder (pkgs.writeTextDir "_meta/cache.nix" meta)) ];
+      outputs = _: { };
+    };
+
+  parts-builder-cache = parts-builder ''
+    {
+      extraSubstituters = [ "https://example.cachix.org" ];
+      extraTrustedPublicKeys = [ "example.cachix.org-1:AAAA" ];
+    }
+  '';
+
+  parts-builder-empty = parts-builder ''
+    {
+      extraSubstituters = [ ];
+      extraTrustedPublicKeys = [ ];
+    }
+  '';
+
   test-inputs = pkgs.writeShellApplication {
     name = "test-inputs";
     runtimeInputs = [
@@ -145,6 +166,19 @@ let
       cat ${outdir}/flake.nix
       nix-instantiate --parse ${outdir}/flake.nix > /dev/null
       grep -F '"nixpkgs-25.05".url' ${outdir}/flake.nix
+    '';
+  };
+  test-flake-parts-builder-nixconfig = pkgs.writeShellApplication {
+    name = "test-flake-parts-builder-nixconfig";
+    runtimeInputs = [ pkgs.gnugrep ];
+    text = ''
+      ${pkgs.lib.getExe (parts-builder-cache.flake-file.apps.write-flake pkgs)}
+      cat ${outdir}/flake.nix
+      grep -F 'extra-substituters = [ "https://example.cachix.org" ];' ${outdir}/flake.nix
+      grep -F 'extra-trusted-public-keys = [ "example.cachix.org-1:AAAA" ];' ${outdir}/flake.nix
+      ${pkgs.lib.getExe (parts-builder-empty.flake-file.apps.write-flake pkgs)}
+      cat ${outdir}/flake.nix
+      if grep -iE 'substituters|public-?keys' ${outdir}/flake.nix; then exit 1; fi
     '';
   };
 
@@ -530,6 +564,7 @@ pkgs.mkShell {
     test-inputs
     test-flake
     test-flake-quoted-name
+    test-flake-parts-builder-nixconfig
     test-flake-stale-lock-flake-attr
     test-bootstrap-all-inputs
     test-bootstrap-selected-inputs
