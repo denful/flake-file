@@ -123,15 +123,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: wimpysworld/nothing-but-nix@v10
+      # unflake reads each fetchTree outPath from a second nix-instantiate process. From
+      # Nix 2.35 fetchTree no longer copies the source into the store, so that read fails.
       - uses: cachix/install-nix-action@v31
+        with:
+          install_url: https://releases.nixos.org/nix/nix-2.34.8/install
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - run: |
           set -e -o pipefail
           cd templates/unflake
           sed -i 's/# flake-file = import/flake-file = import/' default.nix
-          # unflake imports the fetched nixpkgs flake.nix from a second nix-instantiate
-          # process, which fails on a fresh runner unless the source is already in the store.
-          nix flake prefetch https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst
           nix-shell . -A flake-file.sh --run 'write-unflake --verbose'
   tack:
     needs: [nix-fmt]
