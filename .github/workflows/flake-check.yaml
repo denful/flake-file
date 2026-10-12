@@ -129,6 +129,9 @@ jobs:
           set -e -o pipefail
           cd templates/unflake
           sed -i 's/# flake-file = import/flake-file = import/' default.nix
+          # unflake imports the fetched nixpkgs flake.nix from a second nix-instantiate
+          # process, which fails on a fresh runner unless the source is already in the store.
+          nix flake prefetch https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst
           nix-shell . -A flake-file.sh --run 'write-unflake --verbose'
   tack:
     needs: [nix-fmt]
