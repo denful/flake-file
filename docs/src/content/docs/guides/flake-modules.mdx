@@ -86,6 +86,18 @@ Defines `flake-file` options for [npins](https://github.com/andir/npins)-based e
 
 Source: [`modules/npins`](https://github.com/denful/flake-file/tree/main/modules/npins)
 
+## `flakeModules.lon`
+
+Defines `flake-file` options for [lon](https://github.com/nikstur/lon)-based environments. Exposes `write-lon`, which writes `lon.nix` and `lon.lock`. Same input handling as `flakeModules.npins` (schemes, transitive discovery, `follows`, pruning); channels and plain URLs are pinned as `tarball` sources.
+
+Source: [`modules/lon`](https://github.com/denful/flake-file/tree/main/modules/lon)
+
+## `flakeModules.niv`
+
+Defines `flake-file` options for [niv](https://github.com/nmattia/niv)-based environments. Exposes `write-niv`, which writes `nix/sources.json` and `nix/sources.nix`. Same input handling as `flakeModules.npins`; channels and plain URLs are pinned as `tarball` sources.
+
+Source: [`modules/niv`](https://github.com/denful/flake-file/tree/main/modules/niv)
+
 ## `flakeModules.unflake`
 
 Defines `flake-file` options for [unflake](https://codeberg.org/goldstein/unflake)-based environments. Exposes `write-unflake`.

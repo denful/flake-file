@@ -13,6 +13,14 @@ let
       app = "write-npins";
     }
     {
+      file = "lon.lock";
+      app = "write-lon";
+    }
+    {
+      file = "nix/sources.json";
+      app = "write-niv";
+    }
+    {
       file = "${flake-file.tack.lockDir}/${flake-file.tack.lockFile}";
       app = "write-tack";
     }

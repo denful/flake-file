@@ -281,6 +281,65 @@ let
     '';
   };
 
+  test-lon = pkgs.writeShellApplication {
+    name = "test-lon";
+    runtimeInputs = [
+      (empty.flake-file.apps.write-lon pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-lon
+      cat ${outdir}/lon.lock
+      jq -e '.sources | has("empty")' ${outdir}/lon.lock
+      [ -e ${outdir}/lon.nix ]
+    '';
+  };
+
+  test-lon-follows-other = pkgs.writeShellApplication {
+    name = "test-lon-follows-other";
+    runtimeInputs = [
+      (flake-parts-follows-other.flake-file.apps.write-lon pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-lon
+      cat ${outdir}/lon.lock
+      jq -e '.sources."flake-parts".owner == "hercules-ci"' ${outdir}/lon.lock
+      jq -e '.sources.nixpkgs.repo | contains("empty")' ${outdir}/lon.lock
+      jq -e '.sources | has("nixpkgs-lib") | not' ${outdir}/lon.lock
+    '';
+  };
+
+  test-niv = pkgs.writeShellApplication {
+    name = "test-niv";
+    runtimeInputs = [
+      (empty.flake-file.apps.write-niv pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-niv
+      cat ${outdir}/nix/sources.json
+      jq -e 'has("empty")' ${outdir}/nix/sources.json
+      jq -e 'has("nixpkgs") | not' ${outdir}/nix/sources.json
+      [ -e ${outdir}/nix/sources.nix ]
+    '';
+  };
+
+  test-niv-follows-other = pkgs.writeShellApplication {
+    name = "test-niv-follows-other";
+    runtimeInputs = [
+      (flake-parts-follows-other.flake-file.apps.write-niv pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-niv
+      cat ${outdir}/nix/sources.json
+      jq -e '."flake-parts".owner == "hercules-ci"' ${outdir}/nix/sources.json
+      jq -e '.nixpkgs.repo | contains("empty")' ${outdir}/nix/sources.json
+      jq -e 'has("nixpkgs-lib") | not' ${outdir}/nix/sources.json
+    '';
+  };
+
   test-npins-skip = pkgs.writeShellApplication {
     name = "test-npins-skip";
     runtimeInputs = [
@@ -338,6 +397,36 @@ let
       write-lock
       [ -e ${outdir}/flake.nix ]
       grep github:denful/empty-flake ${outdir}/flake.nix
+    '';
+  };
+
+  test-write-lock-lon = pkgs.writeShellApplication {
+    name = "test-write-lock-lon";
+    runtimeInputs = [
+      (empty.flake-file.apps.write-lock pkgs)
+      pkgs.jq
+      pkgs.lon
+    ];
+    text = ''
+      mkdir -p ${outdir}
+      (cd ${outdir} && lon init)
+      write-lock
+      jq -e '.sources | has("empty")' ${outdir}/lon.lock
+    '';
+  };
+
+  test-write-lock-niv = pkgs.writeShellApplication {
+    name = "test-write-lock-niv";
+    runtimeInputs = [
+      (empty.flake-file.apps.write-lock pkgs)
+      pkgs.jq
+      pkgs.niv
+    ];
+    text = ''
+      mkdir -p ${outdir}
+      (cd ${outdir} && niv init --no-nixpkgs)
+      write-lock
+      jq -e 'has("empty")' ${outdir}/nix/sources.json
     '';
   };
 
@@ -414,9 +503,15 @@ pkgs.mkShell {
     test-npins-follows
     test-npins-follows-other
     test-npins-transitive
+    test-lon
+    test-lon-follows-other
+    test-niv
+    test-niv-follows-other
     test-tack
     test-write-lock-flake
     test-write-lock-npins
+    test-write-lock-lon
+    test-write-lock-niv
     test-write-lock-tack
     test-write-lock-unflake
   ];

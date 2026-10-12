@@ -48,6 +48,8 @@ let
       ./../default.nix
       ./../options
       ./../npins
+      ./../lon
+      ./../niv
       ./../unflake
       ./../tack
       ./../write-inputs.nix
