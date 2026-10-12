@@ -9,6 +9,8 @@ let
       dendritic
       import-tree
       npins
+      lon
+      niv
       flakeless-parts
       unflake
       tack
@@ -34,6 +36,16 @@ let
   npins.imports = [
     base
     ./npins
+  ];
+
+  lon.imports = [
+    base
+    ./lon
+  ];
+
+  niv.imports = [
+    base
+    ./niv
   ];
 
   flakeless-parts.imports = [
