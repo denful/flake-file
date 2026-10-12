@@ -16,6 +16,7 @@ See the source: [`modules/options/default.nix`](https://github.com/denful/flake-
 | `flake-file.outputs` | `str` | Literal Nix expression for the `outputs` function |
 | `flake-file.formatter` | `pkgs -> drv` | Function producing the formatter used on the generated file |
 | `flake-file.do-not-edit` | `str` | Header comment written at the top of the generated file |
+| `flake-file.trackPinUrls` | `bool` | Keep the pin URL sidecar used by `write-npins`/`write-lon`/`write-niv` to re-pin changed inputs (default: `true`) |
 
 ## Input Options
 

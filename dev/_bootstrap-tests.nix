@@ -54,6 +54,62 @@ let
     outputs = _: { };
   };
 
+  pin-empty = bootstrap {
+    inputs.foo.url = "github:denful/empty-flake";
+    outputs = _: { };
+  };
+
+  pin-moved = bootstrap {
+    inputs.foo.url = "github:vic/import-tree";
+    outputs = _: { };
+  };
+
+  pin-untracked = bootstrap {
+    inputs.foo.url = "github:denful/empty-flake";
+    flake-file.trackPinUrls = false;
+    outputs = _: { };
+  };
+
+  pin-untracked-moved = bootstrap {
+    inputs.foo.url = "github:vic/import-tree";
+    flake-file.trackPinUrls = false;
+    outputs = _: { };
+  };
+
+  pin-missing = bootstrap {
+    inputs.empty.url = "github:denful/empty-flake";
+    inputs.missing.url = "github:denful/no-such-repo-for-flake-file-tests";
+    outputs = _: { };
+  };
+
+  pin-attrs = bootstrap {
+    inputs.queryRef.url = "github:denful/empty-flake?ref=main";
+    inputs.attrRev = {
+      type = "github";
+      owner = "denful";
+      repo = "empty-flake";
+      rev = "a402c2c33ff3f5010eb0357d8228f27fb7083cbd";
+    };
+    inputs.gitRev.url = "git+https://github.com/denful/empty-flake?ref=main&rev=a402c2c33ff3f5010eb0357d8228f27fb7083cbd";
+    outputs = _: { };
+  };
+
+  pin-dir = bootstrap {
+    inputs.empty.url = "github:denful/empty-flake";
+    inputs.subdir.url = "github:denful/empty-flake?dir=sub";
+    outputs = _: { };
+  };
+
+  pin-host = bootstrap {
+    inputs.enterprise = {
+      type = "github";
+      host = "github.example.org";
+      owner = "denful";
+      repo = "empty-flake";
+    };
+    outputs = _: { };
+  };
+
   flake-parts = bootstrap {
     inputs.flake-parts.url = "github:hercules-ci/flake-parts";
   };
@@ -448,6 +504,142 @@ let
     '';
   };
 
+  # With trackPinUrls = false no sidecar is written and an existing pin is never re-added.
+  test-npins-untracked = pkgs.writeShellApplication {
+    name = "test-npins-untracked";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      lock=${outdir}/npins/sources.json
+      ${pin-untracked.flake-file.apps.write-npins pkgs}/bin/write-npins
+      jq -e '.pins.foo.repository.repo == "empty-flake"' "$lock"
+      test ! -e ${outdir}/npins/flake-file-urls.tsv
+      ${pin-untracked-moved.flake-file.apps.write-npins pkgs}/bin/write-npins
+      jq -e '.pins.foo.repository.repo == "empty-flake"' "$lock"
+      test ! -e ${outdir}/npins/flake-file-urls.tsv
+    '';
+  };
+
+  # A changed URL re-pins; an unchanged one leaves the locked revision alone.
+  test-npins-repin = pkgs.writeShellApplication {
+    name = "test-npins-repin";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      lock=${outdir}/npins/sources.json
+      ${pin-empty.flake-file.apps.write-npins pkgs}/bin/write-npins
+      jq -e '.pins.foo.repository.repo == "empty-flake"' "$lock"
+      jq '.pins.foo.revision = "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' "$lock" > "$lock.tmp"
+      mv "$lock.tmp" "$lock"
+      ${pin-empty.flake-file.apps.write-npins pkgs}/bin/write-npins
+      jq -e '.pins.foo.revision == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' "$lock"
+      ${pin-moved.flake-file.apps.write-npins pkgs}/bin/write-npins
+      cat "$lock"
+      jq -e '.pins.foo.repository.repo == "import-tree"' "$lock"
+    '';
+  };
+
+  test-lon-repin = pkgs.writeShellApplication {
+    name = "test-lon-repin";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      ${pin-empty.flake-file.apps.write-lon pkgs}/bin/write-lon
+      jq -e '.sources.foo.repo == "empty-flake"' ${outdir}/lon.lock
+      ${pin-moved.flake-file.apps.write-lon pkgs}/bin/write-lon
+      cat ${outdir}/lon.lock
+      jq -e '.sources.foo.repo == "import-tree"' ${outdir}/lon.lock
+    '';
+  };
+
+  test-niv-repin = pkgs.writeShellApplication {
+    name = "test-niv-repin";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      ${pin-empty.flake-file.apps.write-niv pkgs}/bin/write-niv
+      jq -e '.foo.repo == "empty-flake"' ${outdir}/nix/sources.json
+      ${pin-moved.flake-file.apps.write-niv pkgs}/bin/write-niv
+      cat ${outdir}/nix/sources.json
+      jq -e '.foo.repo == "import-tree"' ${outdir}/nix/sources.json
+    '';
+  };
+
+  test-npins-missing = pkgs.writeShellApplication {
+    name = "test-npins-missing";
+    runtimeInputs = [
+      (pin-missing.flake-file.apps.write-npins pkgs)
+      pkgs.jq
+      pkgs.gnugrep
+    ];
+    text = ''
+      if write-npins 2> ${outdir}/missing.err; then exit 1; fi
+      grep -F 'missing' ${outdir}/missing.err
+      jq -e '.pins | has("empty")' ${outdir}/npins/sources.json
+      jq -e '.pins | has("missing") | not' ${outdir}/npins/sources.json
+    '';
+  };
+
+  test-npins-url-attrs = pkgs.writeShellApplication {
+    name = "test-npins-url-attrs";
+    runtimeInputs = [
+      (pin-attrs.flake-file.apps.write-npins pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-npins
+      cat ${outdir}/npins/sources.json
+      jq -e '.pins.queryRef.repository.repo == "empty-flake"' ${outdir}/npins/sources.json
+      jq -e '.pins.queryRef.branch == "main"' ${outdir}/npins/sources.json
+      jq -e '.pins.attrRev.revision == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' ${outdir}/npins/sources.json
+      jq -e '.pins.gitRev.revision == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' ${outdir}/npins/sources.json
+    '';
+  };
+
+  test-lon-url-attrs = pkgs.writeShellApplication {
+    name = "test-lon-url-attrs";
+    runtimeInputs = [
+      (pin-attrs.flake-file.apps.write-lon pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-lon
+      cat ${outdir}/lon.lock
+      jq -e '.sources.queryRef.repo == "empty-flake"' ${outdir}/lon.lock
+      jq -e '.sources.queryRef.branch == "main"' ${outdir}/lon.lock
+      jq -e '.sources.attrRev.revision == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' ${outdir}/lon.lock
+      jq -e '.sources.gitRev.revision == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' ${outdir}/lon.lock
+    '';
+  };
+
+  test-niv-url-attrs = pkgs.writeShellApplication {
+    name = "test-niv-url-attrs";
+    runtimeInputs = [
+      (pin-attrs.flake-file.apps.write-niv pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-niv
+      cat ${outdir}/nix/sources.json
+      jq -e '.queryRef.repo == "empty-flake"' ${outdir}/nix/sources.json
+      jq -e '.queryRef.branch == "main"' ${outdir}/nix/sources.json
+      jq -e '.attrRev.rev == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' ${outdir}/nix/sources.json
+      jq -e '.gitRev.rev == "a402c2c33ff3f5010eb0357d8228f27fb7083cbd"' ${outdir}/nix/sources.json
+    '';
+  };
+
+  # Attributes no backend can represent fail loudly, naming the input.
+  test-npins-unrepresentable = pkgs.writeShellApplication {
+    name = "test-npins-unrepresentable";
+    runtimeInputs = [
+      pkgs.jq
+      pkgs.gnugrep
+    ];
+    text = ''
+      if ${pin-dir.flake-file.apps.write-npins pkgs}/bin/write-npins 2> ${outdir}/dir.err; then exit 1; fi
+      grep -F "'subdir'" ${outdir}/dir.err
+      jq -e '.pins | has("empty")' ${outdir}/npins/sources.json
+      if ${pin-host.flake-file.apps.write-npins pkgs}/bin/write-npins 2> ${outdir}/host.err; then exit 1; fi
+      grep -F "'enterprise'" ${outdir}/host.err
+    '';
+  };
+
   test-unflake = pkgs.writeShellApplication {
     name = "test-unflake";
     runtimeInputs = [
@@ -578,10 +770,19 @@ pkgs.mkShell {
     test-npins-follows
     test-npins-follows-other
     test-npins-transitive
+    test-npins-repin
+    test-npins-untracked
+    test-npins-missing
+    test-npins-url-attrs
+    test-npins-unrepresentable
     test-lon
     test-lon-follows-other
+    test-lon-repin
+    test-lon-url-attrs
     test-niv
     test-niv-follows-other
+    test-niv-repin
+    test-niv-url-attrs
     test-tack
     test-write-lock-flake
     test-write-lock-npins

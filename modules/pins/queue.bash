@@ -25,47 +25,80 @@ with_branch() {
         || "${args[@]}" master
 }
 
+# Split a flake URL's query string into ref, rev and host. shallow is only a fetch hint; any
+# other attribute would change what gets fetched, so it is an error rather than dropped.
+parse_query() {
+    local name="$1" kv kvs
+    ref="" rev="" host=""
+    IFS='&' read -ra kvs <<< "$2"
+    for kv in "${kvs[@]}"; do
+        case "$kv" in
+        ref=*)  ref="${kv#ref=}" ref="${ref#refs/heads/}" ;;
+        rev=*)  rev="${kv#rev=}" ;;
+        host=*) host="${kv#host=}" ;;
+        shallow=*|submodules=0|lfs=0) ;;
+        *)
+            echo "flake-file: input '$name': '$kv' cannot be represented by this pin backend" >&2
+            return 1 ;;
+        esac
+    done
+}
+
 # Add a pin by its flake-style URL (github:o/r, gitlab:o/r, channel URL, etc.)
 add_url() {
-    local name="$1" url="$2" spec owner repo ref gitbase q
+    local name="$1" url="$2" spec owner repo path ref rev host q=""
     # Strip wrapper prefixes, then re-dispatch.
     case "$url" in
     tarball+*) add_url "$name" "${url#tarball+}"; return ;;
     file+*)    add_url "$name" "${url#file+}";    return ;;
-    git+*)
-        gitbase="${url#git+}"
-        ref=""
-        if [[ "$gitbase" == *"?"* ]]; then
-            q="${gitbase#*\?}" gitbase="${gitbase%%\?*}"
-            ref=$(printf '%s' "$q" | tr '&' '\n' | sed -n 's/^ref=//p' | head -1)
+    git+*|github:*|gitlab:*|sourcehut:*)
+        if [[ "$url" == *"?"* ]]; then
+            q="${url#*\?}" url="${url%%\?*}"
         fi
-        with_branch pin_git "$name" "$gitbase" "$ref" ;;
-    github:*|gitlab:*)
+        parse_query "$name" "$q" || return 1 ;;
+    esac
+    case "$url" in
+    git+*)
+        with_branch pin_git "$name" "${url#git+}" "$rev" "$ref" ;;
+    github:*|gitlab:*|sourcehut:*)
         spec="${url#*:}" owner="${spec%%/*}" spec="${spec#*/}"
-        repo="${spec%%/*}" ref="${spec#*/}"
-        [ "$ref" = "$repo" ] && ref=""
-        with_branch "pin_${url%%:*}" "$name" "$owner" "$repo" "$ref" ;;
-    sourcehut:*)
-        spec="${url#sourcehut:}" owner="${spec%%/*}" repo="${spec#*/}"
-        ref="${repo#*/}" repo="${repo%%/*}"
-        [ "$ref" = "$repo" ] && ref="main"
-        pin_git "$name" "https://git.sr.ht/${owner}/${repo}" "$ref" ;;
+        repo="${spec%%/*}" path="${spec#*/}"
+        if [ "$path" != "$repo" ]; then
+            # A 40-hex path segment is a revision, anything else a branch.
+            if [[ "$path" =~ ^[0-9a-f]{40}$ ]]; then rev="$path"; else ref="$path"; fi
+        fi
+        case "$url" in
+        github:*)
+            if [ -n "$host" ] && [ "$host" != github.com ]; then
+                echo "flake-file: input '$name': github host '$host' cannot be represented by this pin backend" >&2
+                return 1
+            fi
+            with_branch pin_github "$name" "$owner" "$repo" "$rev" "$ref" ;;
+        gitlab:*)
+            with_branch pin_gitlab "$name" "${host:-gitlab.com}" "$owner" "$repo" "$rev" "$ref" ;;
+        sourcehut:*)
+            pin_git "$name" "https://${host:-git.sr.ht}/${owner}/${repo}" "$rev" "${ref:-main}" ;;
+        esac ;;
     https://channels.nixos.org/*|https://releases.nixos.org/*)
         pin_channel "$name" "$(printf '%s' "$url" | sed 's|https://[^/]*/||;s|/.*||')" ;;
     https://*|http://*)
         pin_tarball "$name" "$url" ;;
     *)
-        with_branch pin_git "$name" "$url" "" ;;
+        with_branch pin_git "$name" "$url" "" "" ;;
     esac
 }
 
 # Fetch a github input's flake.nix and append its deps to QUEUE_FILE.
 discover_transitive() {
-    local name="$1" url="$2" spec owner repo ref
+    local name="$1" url="$2" spec owner repo path ref rev host q=""
     [[ "$url" != github:* ]] && return 0
-    spec="${url#github:}" owner="${spec%%/*}" spec="${spec#*/}"
-    repo="${spec%%/*}" ref="${spec#*/}"
-    [ "$ref" = "$repo" ] && ref="HEAD"
+    spec="${url#github:}"
+    [[ "$spec" == *"?"* ]] && q="${spec#*\?}"
+    parse_query "$name" "$q" 2>/dev/null || return 0
+    spec="${spec%%\?*}" owner="${spec%%/*}" spec="${spec#*/}"
+    repo="${spec%%/*}" path="${spec#*/}"
+    [ "$path" != "$repo" ] && ref="$path"
+    ref="${rev:-${ref:-HEAD}}"
 
     local flake_tmp nix_tmp
     flake_tmp=$(mktemp --suffix=.nix)
@@ -85,6 +118,14 @@ discover_transitive() {
     rm -f "$flake_tmp" "$nix_tmp"
 }
 
+# The URL each pin was added from, in a sidecar the writer owns: a pin is re-added only
+# when its declared URL changes, so an unchanged input keeps its locked revision.
+declare -A recorded=() pinned=()
+if [ -n "$trackPinUrls" ] && [ -f "$pin_urls_file" ]; then
+    while IFS=$'\t' read -r rname rurl; do recorded[$rname]="$rurl"; done < "$pin_urls_file"
+fi
+failed=()
+
 # BFS: process queue items until none remain unvisited.
 while true; do
     name="" url=""
@@ -96,8 +137,12 @@ while true; do
     done < "$QUEUE_FILE"
     [ -z "$name" ] && break
     printf '%s\n' "$name" >> "$SEEN_FILE"
-    if ! pin_exists "$name"; then
-    add_url "$name" "$url" || true
+    # A pin from before the sidecar existed is adopted as is.
+    if pin_exists "$name" && [ "${recorded[$name]-$url}" = "$url" ]; then
+        pinned[$name]="$url"
+    else
+        if pin_exists "$name"; then pin_remove "$name"; fi
+        if add_url "$name" "$url"; then pinned[$name]="$url"; else failed+=("$name"); fi
     fi
     discover_transitive "$name" "$url"
 done
@@ -108,3 +153,14 @@ for existing in $(pin_names); do
     pin_remove "$existing"
     fi
 done
+
+if [ -n "$trackPinUrls" ]; then
+    for pname in "${!pinned[@]}"; do
+    printf '%s\t%s\n' "$pname" "${pinned[$pname]}"
+    done | LC_ALL=C sort > "$pin_urls_file"
+fi
+
+if [ "${#failed[@]}" -gt 0 ]; then
+    echo "flake-file: failed to pin: ${failed[*]}" >&2
+    exit 1
+fi

@@ -98,6 +98,14 @@ Defines `flake-file` options for [niv](https://github.com/nmattia/niv)-based env
 
 Source: [`modules/niv`](https://github.com/denful/flake-file/tree/main/modules/niv)
 
+### Pin URL sidecar
+
+`write-npins`, `write-lon` and `write-niv` record the URL each pin was added from in a small file next to the lock: `npins/flake-file-urls.tsv`, `lon-flake-file-urls.tsv` or `nix/flake-file-urls.tsv`. On the next run, a pin whose declared URL changed is removed and re-added; an unchanged pin keeps its locked revision. The lock files themselves don't record the declared URL in a form that can be compared, which is why a separate file is needed.
+
+Commit it alongside the lock. Without it, another checkout (or CI) can't tell that an input's URL changed and keeps the old pin. A pin with no entry in the file, such as one created before the file existed, is kept as it is.
+
+To not keep the file, set `flake-file.trackPinUrls = false`. No sidecar is then written or read, and an existing pin is never re-added when its URL changes; delete the pin (for example `npins remove <name>`) to re-pin it.
+
 ## `flakeModules.unflake`
 
 Defines `flake-file` options for [unflake](https://codeberg.org/goldstein/unflake)-based environments. Exposes `write-unflake`.
