@@ -139,6 +139,30 @@ let
       ${pkgs.lib.getExe (flake-file.formatter pkgs)} flake.nix
     '';
 
+  # Nix and Lix keep an existing lock node when only an input's `flake` attribute changes (#114),
+  # so a flipped `flake` needs `nix flake update <name>` before the lock reflects it.
+  declaredFlake = lib.mapAttrs (_: input: !(input ? flake && input.flake == false)) (
+    lib.filterAttrs (_: input: !(builtins.isString (input.follows or null))) renderedInputs
+  );
+
+  staleLockWarning = pkgs: ''
+    if [ -e flake.lock ]; then
+      stale=$(${pkgs.lib.getExe pkgs.jq} -r --argjson declared ${lib.escapeShellArg (builtins.toJSON declaredFlake)} '
+        (.nodes // { }) as $nodes
+        | ($nodes[.root // "root"].inputs // { }) as $roots
+        | $declared | to_entries[]
+        | $roots[.key] as $node
+        | select(($node | type) == "string" and ($nodes[$node] | type) == "object")
+        | select($nodes[$node] | has("locked"))
+        | select(($nodes[$node] | if has("flake") then .flake else true end) != .value)
+        | .key' flake.lock 2>/dev/null | tr '\n' ' ' || true)
+      if [ -n "$stale" ]; then
+        echo "flake-file: flake.lock records a different \`flake\` attribute for: $stale" >&2
+        echo "flake-file: nix flake lock keeps the old value; refresh with: nix flake update $stale" >&2
+      fi
+    fi
+  '';
+
   write-flake =
     pkgs:
     let
@@ -157,6 +181,7 @@ let
         if ! cmp -s ${formatted pkgs} flake.nix; then
           cat ${formatted pkgs} > flake.nix
         fi
+        ${staleLockWarning pkgs}
         ${lib.optionalString auto-follow.enable ''
           nix flake lock
           ${autoFollowCommand pkgs}
