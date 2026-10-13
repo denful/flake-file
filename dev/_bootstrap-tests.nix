@@ -154,6 +154,19 @@ let
     inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
   };
 
+  # horyzon7's shape: flake-parts' nixpkgs-lib follows nixpkgs, and with-inputs gets only the
+  # written follows file. nixpkgs is nixpkgs.lib so flake-parts' outputs can evaluate.
+  flake-parts-with-inputs = bootstrap {
+    inputs.nixpkgs.url = "github:nix-community/nixpkgs.lib";
+    inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+    inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    inputs.with-inputs = {
+      url = "github:denful/with-inputs";
+      flake = false;
+    };
+    outputs = _: { };
+  };
+
   flake-parts-follows-other = bootstrap {
     inputs.nixpkgs.url = "github:denful/empty-flake";
     inputs.flake-parts.url = "github:hercules-ci/flake-parts";
@@ -394,9 +407,29 @@ let
     '';
   };
 
+  test-npins-follows-with-inputs = pkgs.writeShellApplication {
+    name = "test-npins-follows-with-inputs";
+    runtimeInputs = [
+      pkgs.nix
+      (flake-parts-with-inputs.flake-file.apps.write-npins pkgs)
+      pkgs.jq
+    ];
+    text = ''
+      write-npins
+      jq -e '.pins | has("nixpkgs-lib") | not' ${outdir}/npins/sources.json
+      nix-instantiate --eval --strict --expr '
+        let
+          sources = import ${outdir}/npins;
+          with-inputs = import sources.with-inputs;
+        in
+        (with-inputs sources [ ${outdir}/npins/follows.nix ] (inputs: { ok = inputs.flake-parts.lib ? mkFlake; })).ok'
+    '';
+  };
+
   test-npins-follows-other = pkgs.writeShellApplication {
     name = "test-npins-follows-other";
     runtimeInputs = [
+      pkgs.nix
       (flake-parts-follows-other.flake-file.apps.write-npins pkgs)
       pkgs.jq
     ];
@@ -406,6 +439,7 @@ let
       jq -e '.pins."flake-parts".url | contains("hercules-ci/flake-parts")' ${outdir}/npins/sources.json
       jq -e '.pins."nixpkgs".url | contains("denful/empty")' ${outdir}/npins/sources.json
       jq -e '.pins | has("nixpkgs-lib") | not' ${outdir}/npins/sources.json
+      [ "$(nix-instantiate --eval --strict --json ${outdir}/npins/follows.nix)" = '{"flake-parts":{"inputs":{"nixpkgs-lib":{"follows":"nixpkgs"}}}}' ]
     '';
   };
 
@@ -426,6 +460,7 @@ let
   test-lon-follows-other = pkgs.writeShellApplication {
     name = "test-lon-follows-other";
     runtimeInputs = [
+      pkgs.nix
       (flake-parts-follows-other.flake-file.apps.write-lon pkgs)
       pkgs.jq
     ];
@@ -435,6 +470,7 @@ let
       jq -e '.sources."flake-parts".owner == "hercules-ci"' ${outdir}/lon.lock
       jq -e '.sources.nixpkgs.repo | contains("empty")' ${outdir}/lon.lock
       jq -e '.sources | has("nixpkgs-lib") | not' ${outdir}/lon.lock
+      [ "$(nix-instantiate --eval --strict --json ${outdir}/lon-follows.nix)" = '{"flake-parts":{"inputs":{"nixpkgs-lib":{"follows":"nixpkgs"}}}}' ]
     '';
   };
 
@@ -456,6 +492,7 @@ let
   test-niv-follows-other = pkgs.writeShellApplication {
     name = "test-niv-follows-other";
     runtimeInputs = [
+      pkgs.nix
       (flake-parts-follows-other.flake-file.apps.write-niv pkgs)
       pkgs.jq
     ];
@@ -465,6 +502,7 @@ let
       jq -e '."flake-parts".owner == "hercules-ci"' ${outdir}/nix/sources.json
       jq -e '.nixpkgs.repo | contains("empty")' ${outdir}/nix/sources.json
       jq -e 'has("nixpkgs-lib") | not' ${outdir}/nix/sources.json
+      [ "$(nix-instantiate --eval --strict --json ${outdir}/nix/follows.nix)" = '{"flake-parts":{"inputs":{"nixpkgs-lib":{"follows":"nixpkgs"}}}}' ]
     '';
   };
 
@@ -769,6 +807,7 @@ pkgs.mkShell {
     test-npins-skip
     test-npins-follows
     test-npins-follows-other
+    test-npins-follows-with-inputs
     test-npins-transitive
     test-npins-repin
     test-npins-untracked

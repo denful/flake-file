@@ -1,5 +1,6 @@
 # npins backend for ../pins/queue.bash.
 pin_urls_file=npins/flake-file-urls.tsv
+pin_follows_file=npins/follows.nix
 pin_init() { npins init --bare 2>/dev/null || true; }
 pin_names() { [ -f npins/sources.json ] && jq -r '.pins | keys[]' npins/sources.json || true; }
 pin_exists() { jq -e --arg n "$1" '.pins | has($n)' npins/sources.json >/dev/null 2>&1; }

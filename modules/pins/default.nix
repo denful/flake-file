@@ -4,7 +4,7 @@
 { lib, config, ... }:
 let
   inherit (config) flake-file;
-  inherit (import ../lib.nix lib) inputsExpr;
+  inherit (import ../lib.nix lib) inputsExpr nixCode;
 
   inputs = flake-file.preProcess (inputsExpr flake-file.inputs);
 
@@ -73,6 +73,27 @@ let
     lib.subtractLists (lib.attrNames pinnableInputs) (collectFollowing inputs)
   );
 
+  # The `follows` declared at every level, and nothing else. A pin file can't record a follow, so
+  # it is written beside the lock for with-inputs to take as overrides.
+  followsOf =
+    inputMap:
+    lib.filterAttrs (_: v: v != { }) (
+      lib.mapAttrs (
+        _: input:
+        let
+          nested = followsOf (input.inputs or { });
+        in
+        lib.optionalAttrs (input ? follows) { inherit (input) follows; }
+        // lib.optionalAttrs (nested != { }) { inputs = nested; }
+      ) inputMap
+    );
+
+  followsNix = ''
+    # Written by flake-file from flake-file.inputs; do not edit.
+    # The follows declared there, for with-inputs: pass this file as (or with) its overrides.
+    ${nixCode { expr = followsOf inputs; }}
+  '';
+
   mkPinWriter =
     {
       name,
@@ -92,6 +113,8 @@ let
       runtimeEnv = {
         out = flake-file.intoPath;
         inherit queueSeed skipSet;
+        followsFile = pkgs.writeText "follows.nix" followsNix;
+        formatter = lib.getExe (flake-file.formatter pkgs);
         trackPinUrls = if flake-file.trackPinUrls then "1" else "";
       };
       text = builtins.readFile backend + builtins.readFile ./queue.bash;

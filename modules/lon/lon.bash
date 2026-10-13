@@ -1,5 +1,6 @@
 # lon backend for ../pins/queue.bash.
 pin_urls_file=lon-flake-file-urls.tsv
+pin_follows_file=lon-follows.nix
 pin_init() { [ -e lon.nix ] || lon init; }
 pin_names() { [ -f lon.lock ] && jq -r '.sources | keys[]' lon.lock || true; }
 pin_exists() { jq -e --arg n "$1" '.sources | has($n)' lon.lock >/dev/null 2>&1; }

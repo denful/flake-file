@@ -160,6 +160,9 @@ if [ -n "$trackPinUrls" ]; then
     done | LC_ALL=C sort > "$pin_urls_file"
 fi
 
+install -m 644 "$followsFile" "$pin_follows_file"
+"$formatter" "$pin_follows_file" >/dev/null 2>&1 || true
+
 if [ "${#failed[@]}" -gt 0 ]; then
     echo "flake-file: failed to pin: ${failed[*]}" >&2
     exit 1
