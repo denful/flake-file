@@ -1,10 +1,13 @@
 let
   sources = import ./npins;
-  with-inputs = import sources.with-inputs sources {
-    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
-    # uncomment on CI for local checkout
-    # flake-file = import ./../../modules;
-  };
+  # npins/follows.nix is written by write-npins from flake-file.inputs' follows.
+  with-inputs = import sources.with-inputs sources (
+    import ./npins/follows.nix
+    // {
+      # uncomment on CI for local checkout
+      # flake-file = import ./../../modules;
+    }
+  );
 
   outputs =
     inputs@{ flake-parts, import-tree, ... }:

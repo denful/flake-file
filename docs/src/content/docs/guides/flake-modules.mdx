@@ -98,6 +98,22 @@ Defines `flake-file` options for [niv](https://github.com/nmattia/niv)-based env
 
 Source: [`modules/niv`](https://github.com/denful/flake-file/tree/main/modules/niv)
 
+### Follows file
+
+A pin file has nowhere to record a `follows`, so `write-npins`, `write-lon` and `write-niv` write the follows declared in `flake-file.inputs` (at any nesting level) to a Nix file next to the lock: `npins/follows.nix`, `lon-follows.nix` or `nix/follows.nix`. For example, `flake-file.inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs"` becomes `{ flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs"; }`.
+
+Pass it to [with-inputs](https://github.com/denful/with-inputs) as its overrides, so a followed input such as flake-parts' `nixpkgs-lib` resolves to your `nixpkgs` pin instead of a missing one:
+
+```nix
+let
+  sources = import ./npins;
+  with-inputs = import sources.with-inputs;
+in
+with-inputs sources [ ./npins/follows.nix ] outputs
+```
+
+Other overrides can go after it in the list, or be merged into it with `//`. Commit it alongside the lock; it is rewritten on every run.
+
 ### Pin URL sidecar
 
 `write-npins`, `write-lon` and `write-niv` record the URL each pin was added from in a small file next to the lock: `npins/flake-file-urls.tsv`, `lon-flake-file-urls.tsv` or `nix/flake-file-urls.tsv`. On the next run, a pin whose declared URL changed is removed and re-added; an unchanged pin keeps its locked revision. The lock files themselves don't record the declared URL in a form that can be compared, which is why a separate file is needed.

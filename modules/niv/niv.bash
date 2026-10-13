@@ -1,5 +1,6 @@
 # niv backend for ../pins/queue.bash.
 pin_urls_file=nix/flake-file-urls.tsv
+pin_follows_file=nix/follows.nix
 pin_init() { [ -e nix/sources.json ] || niv init --no-nixpkgs; }
 pin_names() { [ -f nix/sources.json ] && jq -r 'keys[]' nix/sources.json || true; }
 pin_exists() { jq -e --arg n "$1" 'has($n)' nix/sources.json >/dev/null 2>&1; }
