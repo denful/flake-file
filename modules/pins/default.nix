@@ -100,6 +100,7 @@ let
       description,
       backend,
       runtimeInputs,
+      lockDir ? ".",
     }:
     pkgs:
     pkgs.writeShellApplication {
@@ -112,7 +113,7 @@ let
       ];
       runtimeEnv = {
         out = flake-file.intoPath;
-        inherit queueSeed skipSet;
+        inherit lockDir queueSeed skipSet;
         followsFile = pkgs.writeText "follows.nix" followsNix;
         formatter = lib.getExe (flake-file.formatter pkgs);
         trackPinUrls = if flake-file.trackPinUrls then "1" else "";

@@ -1,5 +1,6 @@
 
-cd "$out"
+mkdir -p "$out/$lockDir"
+cd "$out/$lockDir"
 pin_init
 
 SEEN_FILE=$(mktemp)
