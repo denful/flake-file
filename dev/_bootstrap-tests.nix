@@ -24,6 +24,12 @@ let
     outputs = _: { };
   };
 
+  lon-subdir = bootstrap {
+    inputs.empty.url = "github:denful/empty-flake";
+    flake-file.lon.lockDir = "lon";
+    outputs = _: { };
+  };
+
   all-inputs-schemes = bootstrap {
     inputs.simple.url = "github:denful/empty-flake";
     inputs.withBranch.url = "github:denful/empty-flake/main";
@@ -457,6 +463,26 @@ let
     '';
   };
 
+  test-lon-lock-dir = pkgs.writeShellApplication {
+    name = "test-lon-lock-dir";
+    runtimeInputs = [
+      (lon-subdir.flake-file.apps.write-lock pkgs)
+      pkgs.jq
+      pkgs.lon
+    ];
+    text = ''
+      mkdir -p ${outdir}/lon
+      (cd ${outdir}/lon && lon init)
+      write-lock
+      cat ${outdir}/lon/lon.lock
+      jq -e '.sources | has("empty")' ${outdir}/lon/lon.lock
+      [ -e ${outdir}/lon/lon.nix ]
+      [ -e ${outdir}/lon/lon-follows.nix ]
+      [ -e ${outdir}/lon/lon-flake-file-urls.tsv ]
+      [ ! -e ${outdir}/lon.lock ]
+    '';
+  };
+
   test-lon-follows-other = pkgs.writeShellApplication {
     name = "test-lon-follows-other";
     runtimeInputs = [
@@ -815,6 +841,7 @@ pkgs.mkShell {
     test-npins-url-attrs
     test-npins-unrepresentable
     test-lon
+    test-lon-lock-dir
     test-lon-follows-other
     test-lon-repin
     test-lon-url-attrs

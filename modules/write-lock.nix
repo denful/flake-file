@@ -13,7 +13,7 @@ let
       app = "write-npins";
     }
     {
-      file = "lon.lock";
+      file = "${flake-file.lon.lockDir}/lon.lock";
       app = "write-lon";
     }
     {

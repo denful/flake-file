@@ -90,6 +90,8 @@ Source: [`modules/npins`](https://github.com/denful/flake-file/tree/main/modules
 
 Defines `flake-file` options for [lon](https://github.com/nikstur/lon)-based environments. Exposes `write-lon`, which writes `lon.nix` and `lon.lock`. Same input handling as `flakeModules.npins` (schemes, transitive discovery, `follows`, pruning); channels and plain URLs are pinned as `tarball` sources.
 
+Set `flake-file.lon.lockDir` to keep `lon.nix`, `lon.lock` and their sidecar files in a subdirectory instead of the flake root, e.g. `flake-file.lon.lockDir = "lon"` writes `lon/lon.lock`. Default: `"."`.
+
 Source: [`modules/lon`](https://github.com/denful/flake-file/tree/main/modules/lon)
 
 ## `flakeModules.niv`
