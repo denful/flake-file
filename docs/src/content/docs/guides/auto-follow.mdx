@@ -43,3 +43,15 @@ When automatic follows are enabled, flake-edit manages nested `follows` declarat
 ```
 
 An exclusion cannot also configure `follows`: one requests no automatic follow while the other requests an explicit follow. flake-file reports that conflicting configuration when automatic follows are enabled.
+
+## Choosing a follow yourself
+
+A configured `follows` always wins over the automatic one. flake-file writes it as configured and excludes that nested input from `flake-edit follow`:
+
+```nix
+{
+  flake-file.inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs-stable";
+}
+```
+
+The other nested inputs keep their automatic follows.
