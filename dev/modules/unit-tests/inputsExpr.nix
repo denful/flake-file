@@ -119,7 +119,7 @@ let
     };
   };
 
-  tests.inputsExpr."test automatic follows override configured follows" = {
+  tests.inputsExpr."test explicit follows override automatic follows" = {
     expr =
       mergeAutoFollows
         {
@@ -139,9 +139,20 @@ let
     expected = {
       foo = {
         url = "foo";
-        inputs.bar.follows = "baz";
+        inputs.bar.follows = "quux";
       };
     };
+  };
+
+  tests.inputsExpr."test explicit follows are excluded from automatic follows" = {
+    expr = autoFollowIgnores {
+      foo.inputs.bar = {
+        autoFollow = true;
+        follows = "quux";
+        inputs = { };
+      };
+    };
+    expected = [ "foo.bar" ];
   };
 
   tests.inputsExpr."test opting out removes an automatic follow" = {
