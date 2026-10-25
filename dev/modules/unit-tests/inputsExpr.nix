@@ -144,6 +144,39 @@ let
     };
   };
 
+  tests.inputsExpr."test unconfigured siblings keep automatic follows" = {
+    expr =
+      mergeAutoFollows
+        {
+          foo.inputs.bar = {
+            autoFollow = true;
+            follows = "quux";
+            inputs = { };
+          };
+        }
+        {
+          foo = {
+            url = "foo";
+            inputs.bar.follows = "quux";
+          };
+        }
+        {
+          foo.inputs = {
+            bar.follows = "baz";
+            qux.follows = "baz";
+          };
+        };
+    expected = {
+      foo = {
+        url = "foo";
+        inputs = {
+          bar.follows = "quux";
+          qux.follows = "baz";
+        };
+      };
+    };
+  };
+
   tests.inputsExpr."test explicit follows are excluded from automatic follows" = {
     expr = autoFollowIgnores {
       foo.inputs.bar = {
