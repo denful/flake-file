@@ -114,6 +114,9 @@ let
             nested = mergeNestedAutoFollows (configuredInput.inputs or { }) (exprInput.inputs or { }) (
               existingInput.inputs or { }
             );
+            explicitFollow = lib.optionalAttrs (builtins.isString (configuredInput.follows or null)) {
+              follows = configuredInput.follows;
+            };
             preservedFollow = lib.optionalAttrs (
               automaticallyManaged && builtins.isString (existingInput.follows or null)
             ) { follows = existingInput.follows; };
@@ -123,6 +126,7 @@ let
             value =
               (removeAttrs exprInput ([ "inputs" ] ++ lib.optional automaticallyManaged "follows"))
               // preservedFollow
+              // explicitFollow
               // lib.optionalAttrs (nested != { }) { inputs = nested; };
           }
         ) names
@@ -150,7 +154,7 @@ let
         if disabled && builtins.isString configuredFollow then
           throw "auto-follow cannot be disabled for ${lib.concatStringsSep "." inputPath} while follows is configured"
         else
-          lib.optional disabled (lib.concatStringsSep "." inputPath)
+          lib.optional (disabled || builtins.isString configuredFollow) (lib.concatStringsSep "." inputPath)
           ++ collectAutoFollowIgnores inputPath (input.inputs or { })
       ) inputs
     );
